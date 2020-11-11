@@ -1,0 +1,54 @@
+import 'PetriNet.ecore'
+
+package petrinet
+
+context PetriNet
+inv NonNull_feature('The \'feature\' property of "' + self.toString() + '" is null'):
+	name <> null
+
+
+/* Validité du nom du réseau */
+context PetriNet
+inv validName('Invalid name: ' + self.name):
+	self.name.matches('[A-Za-z_][A-Za-z0-9_]*')
+
+
+/* Le marquage initial des places */
+context Place
+inv marquageInitial: self.jetons >= 0
+
+
+
+/* Les jetons consommés d'une noeud vers un autre est non nul */
+context Arc
+inv moveTokens: self.jetons >= 1
+
+
+
+/* un arc ne peut pas connecter deux places ou deux transitions */
+context Arc
+inv arcConnection: (self.source.oclIsTypeOf(Place) implies self.destination.oclIsTypeOf(Transition))
+                   and
+                   (self.source.oclIsTypeOf(Transition) implies self.destination.oclIsTypeOf(Place))
+
+
+/* Le nom d'une place doit être composé d'au moins un caractère */
+context Place
+inv nameIsDefined: if self.name.oclIsUndefined() then false
+                   else self.name <> ''
+                   endif
+
+
+/* Deux Noeud différentes ne peuvent pas avoir le même nom */
+context Noeud
+inv uniqNames: self.PetriNet.PetriElement
+	->select(pe | pe.oclIsKindOf(Noeud))
+	->collect(pe | pe.oclAsType(Noeud))
+	->forAll(w | self = w or self.name <> w.name)
+
+/* Un noeud ne peut pas être isolé */
+context Noeud
+inv notIsolated: (self.predecessors->size() > 0) or (self.successors->size() > 0)
+
+
+endpackage

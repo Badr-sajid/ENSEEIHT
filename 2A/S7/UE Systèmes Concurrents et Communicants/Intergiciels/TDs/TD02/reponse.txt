@@ -1,0 +1,55 @@
+
+
+
+
+
+
+
+
+
+
+public RE {
+	public void main(String args[]){
+		String host = "//localhost:" + args[0] + "/badr"; 
+		String cmd = args[1];
+	}
+}
+
+
+
+
+
+public interface Daemon extends java.rmi.Remote { 
+	public void Exec(String cmd) throws java.rmi.RemoteException; 
+}
+
+
+
+
+
+
+public class DaemonImpl extends UnicastRemoteObject implements Daemon {
+	
+	// Constructor implementation
+	public DaemonImpl() throws java.rmi.RemoteException {	}
+
+	// Implementation of the remote method
+	public void Exec(String cmd)() throws java.rmi.RemoteException {
+		localExec(cmd);
+	}
+
+	// Main
+	public void main(String args[]){
+		Registry registry = LocateRegistry.createRegistry(9000);
+		
+		try {
+			Daemon o = new DaemonImpl();
+			naming.bind("//localhost:9000/badr",o);
+		} catch (Exception exc) {
+			ex.printStackTrace();
+		}
+	}
+
+	
+		
+}

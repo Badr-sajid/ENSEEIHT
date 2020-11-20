@@ -74,11 +74,60 @@ function Regions_De_Confiance(algo,f::Function,gradf::Function,hessf::Function,x
         Tol_rel = options[9]
     end
 
-    n = length(x0)
-    xmin = zeros(n)
-    fxmin = f(xmin)
-    flag = 0
     nb_iters = 0
+    xk = x0
+    xk_1 = x0
+    delta = delta0
+    CondConvergence = max(Tol_abs, Tol_rel*norm(f(x0)))
+    optionGct = [deltaMax max_iter Tol_rel]
+    for i = 1:max_iter
+        nb_iters = i
+
+        if algo=="gct"
+            sk = Gradient_Conjugue_Tronque(gradf(xk),hessf(xk),optionGct)
+        elseif algo == "cauchy"
+            sk, ~ = Pas_De_Cauchy(gradf(xk),hessf(xk),delta)
+        else
+            print("Nom incorrect , voulez vous dire : gct ou cauchy ? ")
+            break
+        end # if
+        q(s) = f(xk)+ transpose(gradf(xk))*s + (1/2)*transpose(s)*hessf(xk)*s
+        f_xk_sk = f(xk+sk)
+        rho_k = (f(xk)-f(xk+sk))/(q(0)-q(sk))
+        if rho_k>eta1
+            xk_1 = xk+sk
+        else
+            xk_1 = xk
+        end # if
+
+        if rho_k>eta2
+            delta = min(gamma2*delta, deltaMax)
+        elseif rho_k>eta1
+            delta = delta
+        else
+            delta = gamma1*delta
+        end # if
+
+    "condition d'arret "
+        if norm(gradf(xk_1))<=CondConvergence
+            flag = 0
+            break
+        elseif norm(xk_1-xk)<=max(Tol_abs, Tol_rel*norm(xk))
+            flag = 1
+            break
+        elseif abs(f(xk_1)-f(xk))<=max(Tol_abs, Tol_rel*abs(f(xk)))
+            flag = 2
+            break
+        end # if
+    end # for
+
+
+    if nb_iters == max_iter
+        flag = 3
+    end # if
+
+    xmin = xk
+    f_min = f(xk)
 
     return xmin, fxmin, flag, nb_iters
 end

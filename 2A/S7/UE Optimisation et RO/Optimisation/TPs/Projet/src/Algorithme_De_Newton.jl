@@ -50,7 +50,7 @@ function Algorithme_De_Newton(f::Function,gradf::Function,hessf::Function,x0,opt
     xk = x0
     xk_1 = x0
     CondConvergence = max(Tol_abs, Tol_rel*norm(f(x0)))
-    for i = 0:max_iter
+    for i = 1:max_iter
         xk = xk_1
         nb_iters = i
         dk = hessf(xk) \ (-gradf(xk))

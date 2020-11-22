@@ -1,5 +1,0 @@
-test{
-  const a = 3;
-  int b = 4;
-  rat x = [a/b];
-}

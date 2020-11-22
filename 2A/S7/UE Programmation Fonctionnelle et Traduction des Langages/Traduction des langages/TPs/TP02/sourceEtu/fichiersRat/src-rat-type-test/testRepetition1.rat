@@ -1,5 +1,0 @@
-test{
-  while true {
-    int x = 3;
-  } 
-}

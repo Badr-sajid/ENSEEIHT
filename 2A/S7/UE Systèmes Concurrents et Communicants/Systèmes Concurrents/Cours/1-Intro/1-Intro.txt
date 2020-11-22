@@ -1,7 +1,0 @@
-- Un système concurrent est un ensemble de processus qui s’exécutent simultanément et au même temps, et qui peuvent partager des ressources ou contribuer pour réaliser une tache commune.
-
-
-- Un programme est caractérisé par l’ensemble de ses exécutions (histoires, suites d’état) possibles, qui doit être vérifier à chaque étapes d’exécution (sureté) et après un nombre fini de pas (vivacité). Pour chaque programme on spécifie les hypothèse qui doit vérifier (précondition) pour garantir un résultat précis (postconditions).
-
-
-- La conception des systèmes concurrents se bases à la fois sur la modularité (séparer les activités et résonner sur chacune indépendamment en ignorant les interférences entre les instructions) et aussi sur la synchronisation (il s’agit de bloquer un processus prêt jusqu’à ce que tous les processus participant soient aussi prêt).

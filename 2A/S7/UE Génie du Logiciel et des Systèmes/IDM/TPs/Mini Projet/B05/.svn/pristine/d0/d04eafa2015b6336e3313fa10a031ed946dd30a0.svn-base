@@ -1,0 +1,65 @@
+import 'SimplePDL.ecore'
+
+package simplepdl
+
+
+/* Validité du nom du processus */
+context Process
+inv validName('Invalid name: ' + self.name):
+	self.name.matches('[A-Za-z_][A-Za-z0-9_]*')
+
+/* Retrouver le procesuss d'une activité */
+context ProcessElement
+def: process(): Process =
+	Process.allInstances()
+		->select(p | p.processElements->includes(self))
+		->asSequence()->first()
+
+/* / */
+context WorkSequence
+inv successorAndPredecessorInSameProcess('Activities not in the same process : '
+		+ self.predecessor.name + ' in ' + self.predecessor.process().name+ ' and '
+		+ self.successor.name + ' in ' + self.successor.process().name
+):
+	self.process() = self.successor.process()
+	and self.process() = self.predecessor.process()
+
+	
+	
+/* Deux  sous-activités différentes d'un même processus ne peuvet pas avoir le même nom */
+context WorkDefinition
+inv uniqNames: self.Process.processElements
+               ->select(pe | pe.oclIsKindOf(WorkDefinition))
+               ->collect(pe | pe.oclAsType(WorkDefinition))
+               ->forAll(w | self = w or self.name <> w.name)
+
+
+/* Une dépendence c'est pas refléxive */
+context WorkSequence
+inv notReflexive: self.predecessor <> self.successor
+
+
+/* le nom d'une activité doit être composé d'au moins un caractère */
+context Process
+inv nameIsDefined:
+                 if self.name.oclIsUndefined() then false
+                 else self.name.size() > 1
+                 endif
+
+/* l'occurence d'une ressource demandée doit être inférieur à la quantité disponible de cette ressource */              
+context Demande
+inv availableQuantity: self.occurences <= self.ressource.quantity
+
+/* La quantité initiale d'une ressource doit être non nulle */
+context Ressource
+inv notNullQuantity: self.quantity > 0
+
+/* Deux ressources d'un même processus ne peuvent pas avoir le même nom */
+context Ressource
+inv uniqNames: self.Process.processElements
+               ->select(pe | pe.oclIsKindOf(Ressource))
+               ->collect(pe | pe.oclAsType(Ressource))
+               ->forAll(w | self = w or self.name <> w.name)
+
+
+endpackage

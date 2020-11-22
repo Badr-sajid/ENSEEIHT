@@ -1,0 +1,29 @@
+[comment encoding = UTF-8 /]
+[module toLtl('http://simplepdl')]
+
+
+[template public processToLtl(aProcess : Process)]
+[comment @main/]
+[file (aProcess.name + '.ltl', false, 'UTF-8')]
+[let wds : OrderedSet(WorkDefinition) = aProcess.getWDs() ]
+op ready = [for (wd : WorkDefinition | wds)] [if (not(wds->first() = wd))] /\ [/if][wd.name/]_ready[/for];
+op started = [for (wd : WorkDefinition | wds)] [if (not(wds->first() = wd))] /\ [/if][wd.name/]_started[/for];
+op running = [for (wd : WorkDefinition | wds)] [if (not(wds->first() = wd))] /\ [/if][wd.name/]_running[/for];
+op finished = [for (wd : WorkDefinition | wds)] [if (not(wds->first() = wd))] /\ [/if][wd.name/]_finished[/for][/let];
+['[]'/] (finished => dead);
+['[]'/] <> dead;
+['[]'/] (dead => finished);
+- <> finished;
+['[]'/] (finished => - <> ready /\ started /\ - <> running);
+['[]'/] (running => ready /\ started /\ - <> finished);
+['[]'/] (- <> started => - <> running /\ - <> finished);
+
+[/file]
+[/template]
+
+[query public getWDs(p: Process) : OrderedSet(WorkDefinition) = 
+			p.processElements->select( e | e.oclIsTypeOf(WorkDefinition) )
+							 ->collect( e | e.oclAsType(WorkDefinition) ) 
+							 ->asOrderedSet()
+/]
+

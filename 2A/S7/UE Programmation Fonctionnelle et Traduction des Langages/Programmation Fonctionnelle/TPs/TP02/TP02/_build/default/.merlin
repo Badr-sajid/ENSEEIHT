@@ -1,0 +1,19 @@
+EXCLUDE_QUERY_DIR
+B /Users/badrsajid/.opam/4.07.1/lib/base
+B /Users/badrsajid/.opam/4.07.1/lib/base/base_internalhash_types
+B /Users/badrsajid/.opam/4.07.1/lib/base/caml
+B /Users/badrsajid/.opam/4.07.1/lib/base/shadow_stdlib
+B /Users/badrsajid/.opam/4.07.1/lib/ppx_inline_test/config
+B /Users/badrsajid/.opam/4.07.1/lib/ppx_inline_test/runtime-lib
+B /Users/badrsajid/.opam/4.07.1/lib/sexplib0
+B _build/default/.tp2.objs/byte
+S /Users/badrsajid/.opam/4.07.1/lib/base
+S /Users/badrsajid/.opam/4.07.1/lib/base/base_internalhash_types
+S /Users/badrsajid/.opam/4.07.1/lib/base/caml
+S /Users/badrsajid/.opam/4.07.1/lib/base/shadow_stdlib
+S /Users/badrsajid/.opam/4.07.1/lib/ppx_inline_test/config
+S /Users/badrsajid/.opam/4.07.1/lib/ppx_inline_test/runtime-lib
+S /Users/badrsajid/.opam/4.07.1/lib/sexplib0
+S .
+FLG -ppx '/Users/badrsajid/Desktop/TPS/TP02/_build/default/.ppx/bfcab61e6a21ecf6d2f80029fc1ef484/ppx.exe --as-ppx --cookie '\''library-name="tp2"'\'''
+FLG -open Tp2__ -w -40

@@ -17,8 +17,43 @@ struct
 (* Vérifie la bonne utilisation des identifiants et tranforme l'expression
 en une expression de type AstTds.expression *)
 (* Erreur si mauvaise utilisation des identifiants *)
-let analyse_tds_expression tds e = True (* failwith "todo"*)
-
+let rec analyse_tds_expression tds e = 
+  match e with
+    | AstSyntax.AppelFonction (id,le) ->
+      begin 
+          match (chercherGlobalement tds id) with
+            | None -> raise (IdentifiantNonDeclare id)
+            | Some info -> 
+                begin
+                  match info_ast_to_info info with
+                    | InfoFun _ ->  let ne = List.map(analyse_tds_expression tds) le in
+                                    AppelFonction(info,ne)
+                    | _ -> raise (MauvaiseUtilisationIdentifiant id)
+                end
+      end
+    | AstSyntax.Ident n ->
+      begin
+        match (chercherGlobalement tds n) with
+            | None -> raise (IdentifiantNonDeclare n)
+            | Some info -> 
+                begin
+                  match info_ast_to_info info with
+                    | InfoVar _ -> Ident info
+                    | InfoConst(_,v) -> Entier v
+                    | _ -> raise(MauvaiseUtilisationIdentifiant n)
+                end
+      end
+    | AstSyntax.Rationnel (e1,e2) -> Rationnel(analyse_tds_expression tds e1, analyse_tds_expression tds e2)
+    | AstSyntax.Numerateur e1 -> Numerateur (analyse_tds_expression tds e1)
+    | AstSyntax.Denominateur e1 -> Denominateur (analyse_tds_expression tds e1)
+    | AstSyntax.True -> True
+    | AstSyntax.False -> False
+    | AstSyntax.Entier i -> Entier i
+    | AstSyntax.Binaire (b,e1,e2) -> match b with
+                                        | Plus -> Binaire (Plus, analyse_tds_expression tds e1, analyse_tds_expression tds e2)
+                                        | Mult -> Binaire (Mult, analyse_tds_expression tds e1, analyse_tds_expression tds e2)
+                                        | Equ -> Binaire (Equ, analyse_tds_expression tds e1, analyse_tds_expression tds e2)
+                                        | Inf -> Binaire (Inf, analyse_tds_expression tds e1, analyse_tds_expression tds e2)
 
 (* analyse_tds_instruction : AstSyntax.instruction -> tds -> AstTds.instruction *)
 (* Paramètre tds : la table des symboles courante *)

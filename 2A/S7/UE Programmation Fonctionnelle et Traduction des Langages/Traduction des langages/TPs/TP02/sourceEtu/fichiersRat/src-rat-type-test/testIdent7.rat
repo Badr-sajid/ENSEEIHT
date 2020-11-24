@@ -1,4 +1,0 @@
-test{
-  int x = 3;
-  rat y = x;
-}

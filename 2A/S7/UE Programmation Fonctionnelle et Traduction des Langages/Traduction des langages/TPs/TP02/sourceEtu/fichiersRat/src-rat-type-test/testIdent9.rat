@@ -1,4 +1,0 @@
-test{
-  bool x = true;
-  int y = x;
-}

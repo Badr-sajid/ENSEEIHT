@@ -1,7 +1,0 @@
-(ocamllex Lexer)
-
-(menhir
- (modules Parser))
-
-(executable
- (name MainMachine))

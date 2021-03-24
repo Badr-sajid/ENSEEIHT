@@ -1,4 +1,0 @@
-(ocamllex Scanner)
-
-(executables
- (names MainMachine))

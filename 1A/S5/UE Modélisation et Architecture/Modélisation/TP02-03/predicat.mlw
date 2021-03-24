@@ -1,0 +1,20 @@
+theory Predicat
+
+   type t
+
+   predicate phi t
+
+   predicate psi t
+
+   goal THM08 : (forall x : t.(phi x) /\ (psi x)) -> ((forall x : t.(phi x)) /\ (forall x : t.(psi x)))
+
+   type a
+   type b
+
+   predicate chi a b
+
+   goal THM09 : (exists x : a. forall y : b.(chi x y)) -> (forall y : b. exists x : a.(chi x y))
+
+   goal THM10 : (exists x : t.((phi x) -> (psi x))) -> (forall x : t. (phi x)) -> (exists x : t. (psi x))
+
+end

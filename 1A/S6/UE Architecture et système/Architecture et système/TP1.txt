@@ -1,0 +1,89 @@
+module craps(rst, clk, mon_mode, monitor[31..0], mon_reg[4..0] : 
+	abus[31..0], bbus[31..0], dbus[31..0], pc[31..0], fetch, decode, pcplus1, areg[4..0], breg[4..0], dreg[4..0],cmd_ual[5..0],write,oe_num[1..0])
+
+	// mon_mode = 1 => mode moniteur 
+	// on enregistre l'entree Monitor dans le registre sélectionné par mon_reg
+	// le contnu du regisre sélectionné par mon_reg est affiché sur abus
+   
+	// mon_mode = 0 => mode programme (exécution)
+   
+	// REGISTRES
+	registres(rst, clk, areg[4..0],breg[4..0],dreg[4..0], dbus[31..0] : abus[31..0], bbus[31..0], ir[31..0], pc[31..0])
+   
+	// UAL
+	ual(abus[31..0], bbus[31..0], cmd_ual[5..0] : dbus_ual[31..0], setN, setZ, setVC, dN, dZ, dV, dC)
+
+	// FLAGS
+	N := dN on clk reset when rst enabled when setN
+	Z := dZ on clk reset when rst enabled when setZ
+	V := dV on clk reset when rst enabled when setVC
+	C := dC on clk reset when rst enabled when setVC
+
+	// DECODAGE DES ADRESSES
+	csRam = /abus[31]*/abus[30]*/abus[29]*/abus[28]   //adresse RAM commence par 0000
+
+	// RAM 2K (512 mots de 32 bits)
+	wrRam = write*csRam
+	$ram_aread_swrite(clk, wrRam, abus[8..0], dbus[31..0] : dbus_ram[31..0])
+   
+	// DBUS
+	oe_ual = /mon_mode * /oe_num[1] * oe_num[0]		//voir plus bas pour oe_num
+	oe_mem = /mon_mode * oe_num[1] * /oe_num[0]
+	// dbus <-- Moniteur lorsque mon_mode = 1
+	dbus[31..0] = monitor[31..0] output enabled when mon_mode
+	// dbus <-- dbus_ual lorsque oe_ual=1
+	dbus[31..0] = dbus_ual[31..0] output enabled when oe_ual		
+	// dbus <-- dbus_ram lorsque oe_mem = 1 et csRam = 1
+	dbus[31..0] = dbus_ram[31..0] output enabled when oe_mem * csRam
+  
+	// SEQUENCEUR
+   
+	// fetch est l'état initial du séquenceur
+	fetch := pcplus1 on clk set when rst enabled when /mon_mode
+   
+	// fetch -> decode: lecture en mémoire de l'instruction et chargement dans %ir (%r31)
+	decode := fetch on clk reset when rst enabled when /mon_mode
+   
+	// instructions de calcul avec 2ème opérande registre
+	decode2pcplus1 = decode*ir[31]*/ir[30]
+	pcplus1 := decode2pcplus1 on clk reset when rst enabled when /mon_mode
+   
+   // instructions de calcul avec 2ème opérande constante
+   // à compléter ici
+   decode2calc_imm = decode*ir[31]*/ir[30]*ir[13]
+   calc_imm := decode2calc_imm on clk reset when rst enabled when /mon_mode   
+   
+   // microcommandes
+   areg[4..0] = 	mon_mode * mon_reg[4..0]
+					+ /mon_mode * (fetch * "11110"
+   					+ decode2pcplus1 * ir[18..14]
+					+ pcplus1 * "11110"
+               + decode2calc_imm * "111111"
+               + calc_imm * ir[18..14])
+					
+   breg[4..0] = 	//fetch * "00000" +
+   					decode2pcplus1 * ir[4..0] 
+					+ pcplus1 * "10100"
+                 //+decode2calc_imm * "00000"
+               + calc_imm * "10100"
+					
+   dreg[4..0] = 	mon_mode * mon_reg[4..0]
+					+ /mon_mode * (fetch * "11111"
+   					+ decode2pcplus1 * ir[29..25] 
+					+ pcplus1 * "11110"
+               + decode2calc_imm * "10100"
+               + calc_imm * ir[24..19])
+					
+   cmd_ual[5..0] =  //fetch * "00000" +
+   					decode2pcplus1 * ir[24..19]
+					+ pcplus1 * "000000"
+               + decode2calc_imm * "100000"
+                  
+   oe_num[1..0] =	"10" * fetch
+					+ "01" * ( decode2pcplus1 
+                  	+ pcplus1
+                     + decode2calc_imm
+                     + calc_imm) 
+   					
+   write = 0
+end module

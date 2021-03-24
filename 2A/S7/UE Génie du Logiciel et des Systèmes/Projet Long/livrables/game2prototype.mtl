@@ -1,0 +1,497 @@
+[comment encoding = UTF-8 /]
+[module toJava('http://www.n7.fr/Jeu')]
+
+
+[template public jeuToJAVA(aJeu : Jeu)]
+[comment @main/]
+[file (aJeu.name + '.java', false, 'UTF-8')]
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class [aJeu.name/] {
+
+	public static void main(String['[]'/] args) {
+		
+		boolean estJeuFini = false;
+		
+		// Création des  lieux
+
+[let Endroits : OrderedSet(Endroit) = aJeu.getLieux() ]
+	[for (e: Endroit | Endroits)]
+		String Lieu[e.name/] = "[e.name/]";
+		String typeLieu[e.name/]  = "[e.toTypeEndroit()/]";
+		[if (e.description.oclIsUndefined())]
+		String MessageLieu[e.name/]  = "";
+		[else]
+		String MessageLieu[e.name/]  = "[e.description/]";
+		[/if]
+		
+	[/for]
+		HashMap<String, String> mapTypeLieu = new HashMap<String, String>();
+		HashMap<String, String> mapMessageLieu = new HashMap<String, String>();
+
+	[for (e: Endroit | Endroits)]
+		mapTypeLieu.put(Lieu[e.name/],typeLieu[e.name/]);
+	[/for]
+
+	[for (e: Endroit | Endroits)]
+		mapMessageLieu.put(Lieu[e.name/],MessageLieu[e.name/]);
+	[/for]
+
+[/let]
+
+		// Création des objets
+		ArrayList<String> listObjet = new ArrayList<String>();
+[let Objets : OrderedSet(Objet) = aJeu.getObjet() ]
+	[for (o: Objet | Objets)]
+		listObjet.add("[o.name/]");
+	[/for]
+
+[/let]
+
+		// Création des Connaissances
+		ArrayList<String> listConnaissance = new ArrayList<String>();
+[let Connaissances : OrderedSet(Connaissance) = aJeu.getConnaissances() ]
+	[for (c: Connaissance | Connaissances)]
+		listConnaissance.add("[c.name/]");
+	[/for]
+
+[/let]
+
+		// Création des personnages
+[let Personnes : OrderedSet(Personne) = aJeu.getPersonnes() ]
+	[for (p: Personne | Personnes)]
+		String Nom[p.name/] = "[p.name/]";
+		ArrayList<String> listObjet[p.name/] = new ArrayList<String>();
+		ArrayList<String> listConnaissance[p.name/] = new ArrayList<String>();
+	[/for]
+
+		HashMap<String, ArrayList<String>> InfoObjetPersonne = new HashMap<String, ArrayList<String>>();
+		HashMap<String, ArrayList<String>> InfoConnaissancePersonne = new HashMap<String, ArrayList<String>>();
+	[for (p: Personne | Personnes)]
+		InfoObjetPersonne.put("[p.name/]",listObjet[p.name/]);
+	[/for]
+
+	[for (p: Personne | Personnes)]
+		InfoConnaissancePersonne.put("[p.name/]",listConnaissance[p.name/]);
+	[/for]
+		
+		// Création des interactions
+	[for (p: Personne | Personnes)]
+		String Question[p.name/] = "[p.Interaction.question/]";
+		HashMap<String, Boolean> listChoix[p.name/] = new HashMap<String, Boolean>();
+		[let Lchoix : OrderedSet(Choix) = p.getChoix() ]
+			[for (c: Choix | Lchoix)]
+			[if (c.action_du_choix.Consommation_objet->size()=0)]
+		listChoixSphinx.put("[c.name/]",true);
+			[else] 
+		listChoixSphinx.put("[c.name/]",false);
+			[/if]
+		
+			[/for]
+
+		[/let]
+
+		HashMap<Boolean, String > listresultatSphinx = new HashMap<Boolean, String>();
+		listresultat[p.name/].put(true, "Succes");
+		listresultat[p.name/].put(false, "Echec");
+
+	[/for]
+
+		HashMap<String, String> InteractionQuestion = new HashMap<String, String>();
+		HashMap<String, HashMap<String, Boolean>> InteractionChoix = new HashMap<String, HashMap<String, Boolean>>();
+		HashMap<String, HashMap<Boolean, String>> InteractionResultat = new HashMap<String, HashMap<Boolean, String>>();
+	
+	[for (p: Personne | Personnes)]
+		InteractionQuestion.put("[p.name/]",Question[p.name/]);
+	[/for]
+
+	[for (p: Personne | Personnes)]
+		InteractionChoix.put("[p.name/]",listChoix[p.name/]);
+	[/for]
+
+	[for (p: Personne | Personnes)]
+		InteractionResultat.put("[p.name/]",listresultat[p.name/]);
+	[/for]
+
+[/let]
+
+		// Creation de la liste des objet, connaisance et personne visible dans chaque lieu
+[let Endroits : OrderedSet(Endroit) = aJeu.getLieux() ]
+	[for (e: Endroit | Endroits)]
+		// Lieu [e.name/]
+		ArrayList<String> listObjetLieu[e.name/] = new ArrayList<String>();
+		ArrayList<String> listConnaissanceLieu[e.name/] = new ArrayList<String>();
+		ArrayList<String> listPersonneLieu[e.name/] = new ArrayList<String>();
+		ArrayList<String> listCheminLieu[e.name/] = new ArrayList<String>();
+
+		[let Objets : OrderedSet(AllocateurObjetLieu) = e.getObjetLieu() ]
+		[for (a: AllocateurObjetLieu | Objets)]
+			[if (a.objet.Visibilite = Typevisibilite::Visible)]
+		listObjetLieu[e.name/].add("[a.objet.name/]");
+			[/if]
+		[/for]
+		[/let]
+
+		[let connaissances : OrderedSet(Connaissance) = e.getConnaissanceLieu() ]
+		[for (c: Connaissance | connaissances)]
+			[if (c.Visibilite = Typevisibilite::Visible)]
+		listConnaissanceLieu[e.name/].add("[c.name/]");
+			[/if]
+	[/for]
+	[/let]
+	
+	[let personnes : OrderedSet(Personne) = e.getPersonneLieu() ]
+	[for (p: Personne | personnes)]
+		[if (p.Visibilite = Typevisibilite::Visible)]
+			listPersonneLieu[e.name/].add("[p.name/]");
+		[/if]
+	[/for]
+	[/let]
+
+	[/for]
+		HashMap<String, ArrayList<String>> InfoObjetLieu = new HashMap<String, ArrayList<String>>();
+		HashMap<String, ArrayList<String>> InfoConnaissanceLieu = new HashMap<String, ArrayList<String>>();
+		HashMap<String, ArrayList<String>> InfoPersonneLieu = new HashMap<String, ArrayList<String>>();
+		HashMap<String, ArrayList<String>> InfoCheminLieu = new HashMap<String, ArrayList<String>>();
+
+	[for (e: Endroit | Endroits)]
+		InfoObjetLieu.put(Lieu[e.name/],listObjetLieu[e.name/]);
+	[/for]
+
+	[for (e: Endroit | Endroits)]
+		InfoConnaissanceLieu.put(Lieu[e.name/],listConnaissanceLieu[e.name/]);
+	[/for]
+
+	[for (e: Endroit | Endroits)]
+		InfoPersonneLieu.put(Lieu[e.name/],listPersonneLieu[e.name/]);
+	[/for]
+
+	[for (e: Endroit | Endroits)]
+		InfoCheminLieu.put(Lieu[e.name/],listCheminLieu[e.name/]);
+	[/for]
+
+[/let]
+		
+		// Création du joueur
+[let J : Joueur = aJeu.getJoueur() ]
+		String nomJoueur = "[J.name/]";
+
+		// Definition de la taille Maximale du joueur
+		int tailleMaxJoueur = [J.taille/];
+		
+		// Definition de la capacité de stockage disponible du joueur
+		int CapaStockJoueur = tailleMaxJoueur;
+		
+		// Lieu courant
+		String lieuCourant = "[J.lieu.name/]";
+				
+		// Initialisation du nombre de tentative
+		int tentatives = 3;
+		
+		// Initialisation des nb de connaissance et la map qui à chaque connaissance associe le nombre d'occurence 
+		// de cette connaissance chez le joueur
+		int nbConnaissances = 0;
+		HashMap<String, Integer> mapConnaissance = new HashMap<String, Integer>();
+		
+		// Initialisation des nb de connaissance et la map qui à chaque objet associe le nombre d'occurence 
+		// de cette objet chez le joueur
+		int nbObjet = 0;
+		HashMap<String, Integer> mapObjet = new HashMap<String, Integer>();
+[/let]
+
+
+		Scanner sc = new Scanner(System.in);
+		
+		
+		System.out.println("**** DEBUT DU JEU ! **** \n");
+		while (!estJeuFini) {
+			// Affichage du menu
+			System.out.println("\nVous êtes dans le lieu "+ lieuCourant +", Choisissez votre action");
+			System.out.println("1- Afficher les détails sur les connaissances");
+			System.out.println("2- Afficher les détails sur les objets obtenus");
+			System.out.println("3- Afficher des détails sur le lieu courant");
+			int nbOb = (InfoObjetLieu.get(lieuCourant)).size();
+    		int nbco = (InfoConnaissanceLieu.get(lieuCourant)).size();
+			int nbPersonne = (InfoPersonneLieu.get(lieuCourant)).size();
+			for(int i=0; i<nbPersonne; i++) {
+				System.out.println((i+4)+"- Interagir avec "+ InfoPersonneLieu.get(lieuCourant).get(i));
+			}
+			System.out.println((4+nbPersonne) + "- Prendre un objet");
+			System.out.println((5+nbPersonne) + "- Déposer un objet");
+			System.out.println((6+nbPersonne) + "- Prendre un chemin");
+			System.out.println("0- Quitter");
+			
+			System.out.print("\nIndiquez votre choix : ");
+	    	int choice = sc.nextInt();
+	    	
+	    	if (choice == 0) {
+	    		break;
+	    	}
+	    	if (choice == 1) {
+	    		if (nbConnaissances == 0) {
+	    			System.out.println("\n"+nomJoueur +" ne possède aucune connaissance !!");
+	    		} else {
+	    			if (nbConnaissances == 1) {
+		    			System.out.println("\n"+nomJoueur + " possède " + " 1 seule connaissance :");
+		    		} else {
+		    			System.out.println("\n"+nomJoueur + " possède " + nbConnaissances + " connaissances sont les suivantes :");
+		    		}
+		    		for (Map.Entry connais : mapConnaissance.entrySet()) {
+		    	           System.out.println("* " + connais.getValue() + " " + connais.getKey());
+	    	        }
+		    		System.out.println();
+	    		}
+	    	} else if (choice == 2) {
+	    		if (nbObjet == 0) {
+	    			System.out.println("\n"+nomJoueur +" ne possède aucun objet !!");
+	    		} else {
+	    			if (nbObjet == 1) {
+		    			System.out.println("\n"+nomJoueur + " possède " + " 1 seul objet :");
+		    		} else {
+		    			System.out.println("\n"+nomJoueur + " possède " + nbObjet + " objets sont les suivants :");
+		    		}
+		    		for (Map.Entry objet : mapObjet.entrySet()) {
+		    	           System.out.println("* " + objet.getValue() + " " + objet.getKey());
+	    	        }
+		    		System.out.println();
+	    		}
+	    		
+	    	} else if (choice == 3) {
+	    		System.out.println("Le lieu courant est : " + lieuCourant + " :");
+	    		System.out.println("* Il est commposé des objets suivants :");
+	    		for(int i=0; i<nbOb; i++) {
+					System.out.println("\t- "+ InfoObjetLieu.get(lieuCourant).get(i));
+				}
+	    		System.out.println("* Il est commposé des connaisances suivantes :");
+	    		for(int i=0; i<nbco; i++) {
+					System.out.println("\t- "+ InfoConnaissanceLieu.get(lieuCourant).get(i));
+				}
+	    		System.out.println("* Les personnes présentes sont :");
+	    		for(int i=0; i<nbPersonne; i++) {
+					System.out.println("\t- "+ InfoPersonneLieu.get(lieuCourant).get(i));
+				}
+	    	} else if (choice > 3 && choice <(4+nbPersonne)) {
+	    		String personneDefie = InfoPersonneLieu.get(lieuCourant).get(choice-4);
+	    		System.out.println("Vous allez défier " + personneDefie + " :");
+	    		System.out.println("Si la réponse est vrai vous passerez au lieu " + InteractionResultat.get(personneDefie).get(true));
+				System.out.println("Sinon vous perdez une tentative !!");
+				boolean reponseVrai = false;
+	    		while (tentatives > 0 && !reponseVrai) {
+					System.out.println(InteractionQuestion.get(personneDefie));
+					int i = 1;
+					for (Map.Entry choix : (InteractionChoix.get(personneDefie)).entrySet()) {
+		    	           System.out.println("\t" + i +"- " + choix.getKey());
+		    	           i++;
+	    	        }
+					System.out.println("\t0- Retour en arrière");
+					System.out.print("Indiquez votre choix : ");
+	    			int choixReponse = sc.nextInt();
+	    			if (choixReponse == 0) {
+	    				break;
+	    			}
+	    			i = 1;
+	    			for (Map.Entry choix : (InteractionChoix.get(personneDefie)).entrySet()) {
+		    	           if (choixReponse == i)  {
+		    	        	   if (choix.getValue().equals(true)) {
+		    	        		   System.out.println("Félicitation Vous avez débloqué le chemin suivant !!");
+		    	        		   InfoCheminLieu.get(lieuCourant).add(InteractionResultat.get(personneDefie).get(true));
+		    	        		   reponseVrai = true;
+		    	        		   break;
+		    	        	   } else {
+		    	        		   System.out.println("Mauvaise réponse, vous perdez une tentative !!");
+		    	        		   tentatives --;
+		    	        		   System.out.println("Il vous reste " + tentatives + " tentatives\n");
+		    	        		   
+		    	        	   }
+		    	           }
+		    	           i++;
+	    	        }
+	    			
+	    			if (tentatives == 0) {
+	    				System.out.println("Vous ne pouvez plus avancer vous avez donc le lieu echec");
+	    				InfoCheminLieu.get(lieuCourant).add(InteractionResultat.get(personneDefie).get(false));
+	    			}					
+				}
+	    		
+	    		
+	    	} else if (choice == (4+nbPersonne)) {
+	    		int n = (InfoObjetLieu.get(lieuCourant)).size();
+	    		while(CapaStockJoueur != 0) {
+	    			n = (InfoObjetLieu.get(lieuCourant)).size();
+	    			for (int i=0; i<n; i++) {
+	    				System.out.println(i + "- Collecter l'objet " + InfoObjetLieu.get(lieuCourant).get(i));	    			
+	    			}
+	    			System.out.println(n + "- Ne rien collecter ");
+	    			System.out.print("Indiquez votre choix : ");
+	    			int choixObjet = sc.nextInt();
+	    			if (choixObjet != n) {
+	    				String objetChoisi = InfoObjetLieu.get(lieuCourant).get(choixObjet);
+	    				System.out.println("L'objet "+objetChoisi+" a été collecté ");
+	    				CapaStockJoueur--;
+	    				nbObjet++;
+	    				if (mapObjet.get(objetChoisi) != null) {
+	    					int ancienneVal = mapObjet.get(objetChoisi);
+	    					mapObjet.replace(objetChoisi, ancienneVal+1);
+	    				} else {
+	    					mapObjet.put(objetChoisi, 1);
+	    				}
+	    				
+	    				InfoObjetLieu.get(lieuCourant).remove(choixObjet);
+	    			} else {
+	    				break;
+	    			}
+	    		}
+	    	} else if (choice == (5+nbPersonne)) {
+	    		int n = mapObjet.size();
+	    		while(nbObjet != 0) {
+	    			n = mapObjet.size();
+	    			int i=0;
+	    			for (Map.Entry objet : mapObjet.entrySet()) {
+		    	           System.out.println(i + "- Déposer l'objet " + objet.getKey());
+		    	           i++;
+	    	        }
+	    			System.out.println(n + "- Ne rien déposer ");
+	    			System.out.print("Indiquez votre choix : ");
+	    			int choixObjet = sc.nextInt();
+	    			if (choixObjet != n) {
+	    				String objetChoisi = "";
+	    				i=0;
+	    				for (Map.Entry objet : mapObjet.entrySet()) {
+			    	           if (i==choixObjet) {
+			    	        	   objetChoisi = (String) objet.getKey();
+			    	           }
+			    	           i++;
+		    	        }
+	    				
+	    				System.out.println("L'objet "+objetChoisi+" a été déposé ");
+	    				CapaStockJoueur++;
+	    				nbObjet--;
+	    				if (mapObjet.get(objetChoisi) > 1) {
+	    					int ancienneVal = mapObjet.get(objetChoisi);
+	    					mapObjet.replace(objetChoisi, ancienneVal-1);
+	    				} else {
+	    					mapObjet.remove(objetChoisi);
+	    				}
+	    				
+	    				(InfoObjetLieu.get(lieuCourant)).add(objetChoisi);
+	    			} else {
+	    				break;
+	    			}
+	    		}
+	    	} else if (choice == (6+nbPersonne)) {
+	    		int nbC = (InfoCheminLieu.get(lieuCourant)).size();
+	    		if (nbC == 0) {
+	    			System.out.println("\nAucun chemin n'est possible à partir de " + lieuCourant +"!!");
+	    		} else {
+	    			if (nbC == 1) {
+		    			System.out.println("\nLe seul chemin possible à partir de " + lieuCourant + " est  :");
+		    		} else {
+		    			System.out.println("\nLes chemins possibles à partir de " + lieuCourant + " sont les suivants :");
+		    		}
+		    		for (int i=0; i<nbC; i++ ) {
+		    	           System.out.println(i + "- " + InfoCheminLieu.get(lieuCourant).get(i));
+	    	        }
+		    		System.out.println(nbC + "- Ne rien choisir");
+		    		System.out.print("Indiquez votre choix : ");
+	    			int choixChemin = sc.nextInt();
+	    			if (choixChemin != nbC) {
+	    				lieuCourant = InfoCheminLieu.get(lieuCourant).get(choixChemin);
+	    			}
+	    		}
+	    		
+	    	}
+	    	if (lieuCourant == LieuEchec || lieuCourant == LieuSucces) {
+				estJeuFini = true;
+			}
+		}
+		
+		System.out.println("\n" + mapMessageLieu.get(lieuCourant));
+		System.out.println("\n\n**** FIN DU JEU ! **** \n");
+		System.exit(1);
+
+	}
+
+}
+		
+
+[/file]
+[/template]
+
+[query public getJoueur(j: Jeu) : Joueur =
+   j.jeuelement->select( e | e.oclIsTypeOf(Joueur) )
+      ->collect( e | e.oclAsType(Joueur) )
+      ->asSequence()
+	  ->first()
+/]
+
+[query public getLieux(j: Jeu) : OrderedSet(Endroit) =
+   j.jeuelement->select( e | e.oclIsTypeOf(Endroit) )
+      ->collect( e | e.oclAsType(Endroit) )
+      ->asOrderedSet()
+/]
+
+[query public getObjet(j: Jeu) : OrderedSet(Objet) =
+   j.jeuelement->select( e | e.oclIsTypeOf(Objet) )
+      ->collect( e | e.oclAsType(Objet) )
+      ->asOrderedSet()
+/]
+
+[query public getConnaissances(j: Jeu) : OrderedSet(Connaissance) =
+   j.jeuelement->select( e | e.oclIsTypeOf(Connaissance) )
+      ->collect( e | e.oclAsType(Connaissance) )
+      ->asOrderedSet()
+/]
+
+[query public getPersonnes(j: Jeu) : OrderedSet(Personne) =
+   j.jeuelement->select( e | e.oclIsTypeOf(Personne) )
+      ->collect( e | e.oclAsType(Personne) )
+      ->asOrderedSet()
+/]
+
+[query public getChoix(p: Personne) : OrderedSet(Choix) =
+   p.Interaction.choix->select( e | e.oclIsTypeOf(Choix) )
+      ->collect( e | e.oclAsType(Choix) )
+      ->asOrderedSet()
+/]
+
+[query public getObjetLieu(e: Endroit) : OrderedSet(AllocateurObjetLieu) =
+   e.allocateurObjetLieu->select( j | j.oclIsTypeOf(AllocateurObjetLieu) )
+      ->collect( e | e.oclAsType(AllocateurObjetLieu) )
+      ->asOrderedSet()
+/]
+
+[query public getConnaissanceLieu(e: Endroit) : OrderedSet(Connaissance) =
+   e.connaissance->select( j | j.oclIsTypeOf(Connaissance))
+      ->collect( j | j.oclAsType(Connaissance))
+      ->asOrderedSet()
+/]
+
+[query public getPersonneLieu(e: Endroit) : OrderedSet(Personne) =
+   e.personne->select( j | j.oclIsTypeOf(Personne))
+      ->collect( j | j.oclAsType(Personne))
+      ->asOrderedSet()
+/]
+
+
+[query public toTypeEndroit(e : Endroit) : String =
+   if e.lieu.oclIsKindOf(Debut)  then
+      'début'
+   else 
+		if e.lieu.oclIsKindOf(Lieu) then
+	      	'lieu'
+		else
+			'fin'
+		endif
+   endif
+/]
+
+[query public typeResult(c : Choix) : String =
+	if c.action_du_choix.Consommation_objet.oclIsUndefined() = true  then
+		'true'
+	else 
+		'false'
+	endif
+/]

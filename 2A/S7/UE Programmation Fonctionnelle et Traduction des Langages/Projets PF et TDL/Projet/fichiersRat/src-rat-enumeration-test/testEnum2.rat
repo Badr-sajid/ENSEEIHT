@@ -1,0 +1,16 @@
+enum Mois {Janvier, Fevrier, Mars, Avril,  Mai, Juin,  Juillet ,  Aout, Septembre, Octobre, Novembre, Decembre};
+
+
+bool comparer(Mois m1 Mois m2) {
+    bool b = false;
+    if (m1 = m2) { b = true; }
+    else {}
+    return b;
+}
+
+main {
+    Mois m1 = Janvier;
+    Mois m2 = Fevrier;
+    bool b = (call comparer(m1 m2));
+    print b;
+}

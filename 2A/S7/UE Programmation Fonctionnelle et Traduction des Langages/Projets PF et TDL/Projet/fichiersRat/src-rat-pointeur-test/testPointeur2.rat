@@ -1,0 +1,7 @@
+main {
+    int * pointeur = (new int);
+    int a = 10;
+    pointeur = &a;
+    int valeur = (*pointeur);
+    print valeur;
+}

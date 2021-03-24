@@ -1,0 +1,66 @@
+Jeu JeuEnigme {
+	Connaissance Reussite {visibility Invisible},
+	Objet tentative { 
+		taille 1 
+		visibility Invisible
+	},
+
+	Joueur explorateur {
+		taille 10
+		allocateurObjetJoueur ( alocateurTentative 
+			{
+				nboccurence 3 
+				objetaoj tentative 
+				proprietaire explorateur 
+			}) 
+		} ,
+		
+	Endroit Enigme Debut Chemin_suivantD (
+		Chemin DebutversSucces { Lieu_precedent Enigme Lieu_suivant Succes },
+		Chemin DebutversEchec { Lieu_precedent Enigme Lieu_suivant Echec })  
+		{ 
+			ouvertOUferme Ouvert
+			visibility Visible
+		},
+		
+	Endroit Succes Fin  Chemin_entrantsF (
+		Chemin DebutversSucces { Lieu_precedent Enigme Lieu_suivant Succes })
+		{ 
+			ouvertOUferme Ferme
+			visibility Invisible
+			cv ( Contrainte_connaissance Condition {
+				condition_connaissance Reussite } ) 
+		},
+			
+	Endroit Echec Fin  Chemin_entrantsF (
+		Chemin DebutversEchec { Lieu_precedent Enigme Lieu_suivant Echec })  
+		{ 
+			ouvertOUferme Ferme
+			visibility Invisible
+			cv ( Contrainte_connaissance Condition {
+				condition_connaissance Reussite } ) 
+		} ,
+	
+	Personne Sphinx {
+		visibility Visible
+		cv ( Condition { nb_occurence_objet_min 0 condition_objet tentative condition_connaissance Reussite })
+		InteractionP {
+			qst "Question" 
+			j explorateur 
+			pers Sphinx 
+			choix {
+				Choix1 { action_du_choix { 
+					victime ( explorateur ) 
+					Attribution_connaissance (Reussite) 
+					Consommation_objet ( tentative )
+				} } ,
+				Choix2 { action_du_choix { 
+					victime ( explorateur ) 
+					Consommation_objet ( tentative )
+				} }
+				}
+			}
+			
+		
+	} 
+}

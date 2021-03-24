@@ -1,0 +1,186 @@
+
+Ex1 : 		Comptage en scrutant
+
+SW = 0x90000000 
+LD = 0xB0000000 
+STACK = 0x100 
+start: 	set LD, %r1 
+	set STACK,%r2 
+	set SW, %r8 	st %r0,[%r2] 
+	set 0x2000,%sp 
+	ld [%r8], %r4 
+	sll %r4,31,%r10 
+	slr %r10,31,%r6 
+
+loop: call comparer 
+	call aff inc %r7 
+	ba loop 
+
+aff : 	push %r3
+	ld [%r2], %r3
+	st %r3, [%r1]
+	pop %r3 	ret 
+
+comparer :
+	ld [%r8], %r4 
+	sll %r4,31,%r10 
+	slr %r10,31,%r5 		// %r5 contien sw[0]
+	cmp %r5, 0 	beq si 
+	cmp %r6,1 
+	beq si 	ld [%r2],%r9
+	add %r9,1,%r9
+	st %r9,[%r2] 
+
+si: 
+	add %r5,0,%r6 		// acctualiser la valeur de %r6
+	ret 
+
+
+
+_____________________________________________________________
+
+_____________________________________________________________
+
+Ex2 : 		Comptage par interruption
+
+LD = 0xB0000000
+STACK = 0x100 
+
+	ba start 
+	.org 1 
+it : 
+	push %r3 	ld [%r2], %r3
+	add %r3, 1, %r3
+	st %r3, [%r2]
+	pop %r3 	reti 
+
+start: 	set LD, %r1 
+	set STACK,%r2
+	st %r0,[%r2]
+	set 0x2000,%sp 
+
+loop: 
+	call aff 
+	ba loop 
+
+aff : 	push %r3 
+	ld [%r2], %r3
+	st %r3, [%r1]
+	pop %r3 	ret
+
+
+
+_____________________________________________________________
+
+_____________________________________________________________
+
+
+
+
+Ex3 :		Buffer d’entrée
+ 
+switch = 0x90000000
+leds = 0xB0000000
+buffer = 100
+      
+	ba start
+     
+IT:   
+	ld[%r1],%r3      
+     	set buffer,%r29    
+      	add %r3,0,%r29    
+      	st %r3,[%r1]
+      	reti
+
+start:
+	set switch,%r1     
+       	set leds,%r2       
+       	set buffer,%r29  
+
+loop: 
+	clr %r3    
+
+loop2:
+	cmp %r3, 100     
+       	be stop2     
+       	add %r3,1,%r3    
+       	ba loop2        
+
+stop2: 
+	st %r29,[%r2]    
+stop:  
+	ba loop
+
+afficher: 
+	st %r3,[%r2]    
+
+ajouter: 
+	inc %r3     
+       	st %r1,[%r29 +%r3] 
+         reti
+         
+retirer: 
+	dec  %r3   
+         reti
+
+_____________________________________________________________
+
+_____________________________________________________________
+
+
+Ex4 : 		Commutation de tâches
+
+// tâche 0 = comptage sur ld[3..0] ; tâche 1 = comptage sur ld[7..4] 
+// À chaque appui sur IT, changement de tâche 
+
+LD = 0xb0000000 
+STACK0 = 0x100 
+STACK1 = 0x200 
+clr %r9 
+	ba start 
+	.org 1 
+it: 
+	call change 
+	ba start
+	reti 
+
+start: 		// initialisation contexte tâche 1 
+	setq STACK1,%sp
+	cmp %r9, 1 	beq prog1 
+
+	// démarrage sur la tâche 0 
+	setq STACK0, %sp 	ba prog0 
+
+// tâche 0 prog0:
+	set LD, %r3 
+	clr %r1
+
+loop0:
+	inc %r1 
+	sll %r1, 8, %r2
+	st %r2, [%r3]
+	ba loop0 
+
+// tâche 1 prog1:
+	set LD, %r3 
+	clr %r1
+
+loop1:
+	inc %r1 
+	st %r1, [%r3]
+	ba loop1 
+
+change :
+	cmp %r9,0
+	beq si0 
+	set 0,%r9
+	ba finsi 
+
+si0:
+	set 1, %r9
+
+finsi:
+	ret 
+
+tasknum: 	.word 0 		// numéro de la tâche courante (0 ou 1) 
+tabsp: 	.word 0, 0 		// table des pointeurs de pile 

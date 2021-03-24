@@ -1,0 +1,9 @@
+function [rho_F,theta_F] = estimation_F(rho,theta)
+A(:,1) = cos(theta);
+A(:,2) = sin(theta);
+B = rho;
+X = A\B;
+x_F = X(1);
+y_F = X(2);
+rho_F = sqrt(x_F^2 + y_F^2);
+theta_F = atan2(y_F,x_F);

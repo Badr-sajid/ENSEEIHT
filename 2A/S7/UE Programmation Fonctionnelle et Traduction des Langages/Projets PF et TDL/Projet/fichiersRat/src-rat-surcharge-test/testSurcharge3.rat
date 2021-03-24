@@ -1,0 +1,17 @@
+int f(int a int b) {
+    return (a + b);
+}
+
+int f(rat a rat b) {
+    return (num a + num b);
+}
+
+main { 
+    int s1 = call f([1/2] [1/2]);
+    int s2 = call f(1 2);
+    if (s1 = 2) {
+        print s1;
+    } else {
+        print s2;
+    }
+}

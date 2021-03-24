@@ -1,0 +1,18 @@
+pl enigme(0)
+pl reussite(0)
+pl succes(0)
+pl echec(0)
+pl chemin_Succes(0)
+pl chemin_Echec(0)
+pl pas_Reussite(1)
+pl tentative(3)
+pl tentative_Effectue(0)
+pl visibilite_Sphynx(0)
+tr sphynx_visible tentative?1 pas_Reussite?1 -> visibilite_Sphynx
+tr choix visibilite_Sphynx tentative -> enigme 
+tr bonne_Reponse enigme pas_Reussite -> reussite
+tr mauvaise_Reponse enigme -> tentative_Effectue
+tr vers_Chemin_Echec tentative_Effectue*3 -> chemin_Echec
+tr vers_Chemin_Succes reussite -> chemin_Succes
+tr vers_Succes chemin_Succes -> succes
+tr vers_Echec chemin_Echec -> echec

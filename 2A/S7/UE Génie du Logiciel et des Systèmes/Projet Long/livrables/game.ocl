@@ -1,0 +1,64 @@
+import 'Jeu.ecore'
+
+package jeu
+
+context Joueur
+-- Le nom doit être valide
+inv validName('Invalid name: ' + self.name):
+	self.name.matches('[A-Za-z0-9_][A-Za-z0-9_]*')
+	
+-- La taille doit être strictement positif
+inv taille: self.taille > 0
+	
+-- Le joueuer ne peut pas porter plus que la taille de son inventaire
+inv pasDeSurpoid: self.Jeu.jeuelement
+				->select(j | j.oclIsKindOf(Joueur))
+				->collect(j | j.oclAsType(Joueur))
+				->collect(allocateurObjetJoueur)
+				->collect(nboccurence*(objet.taille))
+				-> sum() <= self.taille
+				
+-- Un seul et unique joueur principal dans le jeu 
+inv uniqJoueur: self.Jeu.jeuelement
+				->select(j | j.oclIsKindOf(Joueur))
+				->collect(j | j.oclAsType(Joueur))
+				-> size() = 1
+context Endroit
+-- Le nom doit être valide
+inv validName('Invalid name: ' + self.name):
+	self.name.matches('[A-Za-z0-9_][A-Za-z0-9_]*')
+
+-- Deux lieux differents doivent avoir deux noms differents
+inv uniqNames: self.Jeu.jeuelement
+				->select(l | l.oclIsKindOf(Endroit))
+				->collect(l | l.oclAsType(Endroit))
+				->forAll(l | self = l or self.name <> l.name)
+
+context Endroit
+-- 1 seul point de depart
+inv uniqPointDepart: self.Jeu.jeuelement
+					-> select(l | l.oclIsKindOf(Endroit))
+					-> collect(l | l.oclAsType(Endroit))
+					-> select(l | l.lieu.oclIsKindOf(Debut))
+					-> collect(l | l.lieu.oclAsType(Debut))
+					-> size() = 1
+context Endroit 
+-- Une arrivée doit exister				
+inv arriveeExiste: self.Jeu.jeuelement
+					-> select(l | l.oclIsKindOf(Endroit))
+					-> collect(l | l.oclAsType(Endroit))
+					-> select(l | l.lieu.oclIsKindOf(Fin))
+					-> collect(l | l.lieu.oclAsType(Fin))
+					-> size() >= 1
+
+
+--context Interaction
+-- Une interaction propose un unique choix
+--inv uniqchoix: self
+--					-> select(l | l.oclIsKindOf(Choix))
+--					-> collect(l | l.oclAsType(Choix))
+--					-> size() = 1
+
+endpackage
+
+

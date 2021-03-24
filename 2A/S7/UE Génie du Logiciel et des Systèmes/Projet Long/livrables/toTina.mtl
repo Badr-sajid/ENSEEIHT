@@ -1,0 +1,41 @@
+[comment encoding = UTF-8 /]
+[module toTina('http://petri')]
+
+
+[template public petriToTina(anEPetri : EPetri)]
+[comment @main/]
+[file ('transformationTina.net', false, 'UTF-8')]
+	[let places : OrderedSet(Place) = getPlaces(anEPetri) ] 
+	[for (p : Place | places)]
+    	pl [p.name/] ([p.jeton/]) 
+	[/for]
+	[/let]
+	[let transts : OrderedSet(ETransition) = anEPetri.getTrans() ] 
+	[for (tr : ETransition | transts)]
+    	tr [tr.name/] [for (arcs : EArc | anEPetri.getArcsdest(tr))] [arcs.De.name/][if (arcs.type<>EArcType::normal)]['?'/][arcs.Poids/][/if][/for] -> [for (arcs : EArc | anEPetri.getArcssource(tr))] [arcs.Vers.name/][/for]
+	[/for]
+	[/let]
+[/file]
+[/template]
+[query public getPlaces(p: EPetri) : OrderedSet(Place) = 
+	p.epetrielement->select( e | e.oclIsTypeOf(Place) )
+		->collect( e | e.oclAsType(Place) )
+		->asOrderedSet()
+/]
+[query public getArcsdest(p: EPetri, trans: Noeud) : OrderedSet(EArc) = 
+	p.epetrielement->select( e | e.oclIsTypeOf(EArc) )
+		->collect( e | e.oclAsType(EArc) )
+		->select( e1 | e1.Vers = trans ) 
+		->asOrderedSet()
+/]
+[query public getArcssource(p: EPetri, trans: Noeud) : OrderedSet(EArc) = 
+	p.epetrielement->select( e | e.oclIsTypeOf(EArc) )
+		->collect( e | e.oclAsType(EArc) )
+		->select( e1 | e1.De = trans ) 
+		->asOrderedSet()
+/]
+[query public getTrans(p: EPetri) : OrderedSet(Noeud) = 
+	p.epetrielement->select( e | e.oclIsTypeOf(ETransition) )
+		->collect( e | e.oclAsType(ETransition) )
+		->asOrderedSet()
+/]

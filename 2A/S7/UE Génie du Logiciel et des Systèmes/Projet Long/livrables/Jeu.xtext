@@ -1,0 +1,136 @@
+grammar fr.n7.Jeu with org.eclipse.xtext.common.Terminals
+
+generate jeu "http://www.n7.fr/Jeu"
+
+Jeu : 'Jeu' name=ID
+	'{'
+		( jeuelement+=JeuElement ( "," jeuelement+=JeuElement)*  )?
+	'}';
+
+JeuElement : Joueur | Connaissance | Objet | Personne | Endroit ;
+
+Lieu_generique: Lieu | Fin | Debut ;
+
+
+Endroit : 'Endroit' name=ID
+	lieu = Lieu_generique
+	'{'
+		('ouvertOUferme' ouvertOUferme=OuvertOuferme)?
+		('description' description=STRING)?		
+		('laconnaissance' '{' connaissance+=Connaissance ( "," connaissance+=Connaissance)* '}' )?
+		('allocateurObjetLieu' '{' allocateurObjetLieu+=AllocateurObjetLieu ( "," allocateurObjetLieu+=AllocateurObjetLieu)* '}' )?
+		('visibility' Visibilite=Typevisibilite)?
+		('cv' '(' conditionvisibilite+=Condition ( "," conditionvisibilite+=Condition)* ')' )?
+	'}';
+		
+
+
+enum Typevisibilite : 
+				Visible = 'Visible' | Invisible = 'Invisible';
+
+Condition : 
+	(estVerifie?='estVerifie')?
+	(Contrainte_connaissance?='Contrainte_connaissance')?
+	'Condition'
+	'{'
+		('info' info=STRING)?
+		('nb_occurence_objet_min' nb_occurence_objet_min=INT)?
+		('nb_occurence_objet_max' nb_occurence_objet_max=INT)?
+		('condition_objet' condition_objet=[Objet])?
+		('condition_connaissance' condition_connaissance=[Connaissance])?
+	'}';
+
+Joueur : 'Joueur' name=ID
+	'{'
+		('taille' taille=INT)?
+		('lieu' lieu=[Endroit])?
+		('connaissancejoueur' '(' connaissance+=Connaissance ( "," connaissance+=Connaissance)* ')' )?
+		('allocateurObjetJoueur' '(' allocateurObjetJoueur+=AllocateurObjetJoueur ( "," allocateurObjetJoueur+=AllocateurObjetJoueur)* ')' )?
+		('visibility' Visibilite=Typevisibilite)?
+		('cv' '(' conditionvisibilite+=Condition ( "," conditionvisibilite+=Condition)* ')' )?
+	'}';
+
+Connaissance : 'Connaissance' name=ID
+	'{'
+		('description' description=STRING)?
+		('visibility' Visibilite=Typevisibilite)?
+		('cv' '(' conditionvisibilite+=Condition ( "," conditionvisibilite+=Condition)* ')' )?
+		
+	'}';
+
+Objet : 'Objet' name=ID
+	'{'
+		('taille' taille=INT)?
+		('description' description=STRING)?
+		('visibility' Visibilite=Typevisibilite)?
+		('cv' '(' conditionvisibilite+=Condition ( "," conditionvisibilite+=Condition)* ')' )?
+	'}';
+
+Personne : 'Personne' name=ID
+	'{'
+		('visibility' Visibilite=Typevisibilite)?
+		('cv' '(' conditionvisibilite+=Condition ( "," conditionvisibilite+=Condition)* ')' )?
+		('InteractionP' Interaction=Interaction)?
+	'}';
+	
+Debut : 'Debut'
+	'Chemin_suivantD' '(' Chemin_suivant+=Chemin ( "," Chemin_suivant+=Chemin)* ')' ;
+
+Chemin : 'Chemin' name=ID
+	'{'
+		'Lieu_precedent' Lieu_precedent=[Endroit]
+		'Lieu_suivant' Lieu_suivant=[Endroit]
+
+	'}';
+
+Lieu : 'Lieu'
+	'Chemin_sortantsL' '(' Chemin_sortants+=Chemin ( "," Chemin_sortants+=Chemin)* ')' 
+	'Chemin_entrantsL' '(' Chemin_entrants+=Chemin ( "," Chemin_entrants+=Chemin)* ')' ;
+
+Fin : 'Fin'
+	'Chemin_entrantsF' '(' Chemin_entrants+=Chemin ( "," Chemin_entrants+=Chemin)* ')' ;
+
+
+
+AllocateurObjetJoueur : 
+	name=ID
+	'{'
+		('nboccurence' nboccurence=INT)?
+		('objetaoj' objet=[Objet])?
+		('proprietaire' proprietaire=[Joueur])?
+	'}';
+
+
+
+enum OuvertOuferme :
+				Ouvert = 'Ouvert' | Ferme = 'Ferme';
+
+AllocateurObjetLieu :
+	name=ID
+	'{'
+		('nboccurence' nboccurence=INT)?
+		('objetaol' objet=[Objet])?
+		('proprietaire' proprietaire=[Endroit])?
+	'}';
+
+Interaction : 
+	'{'
+		('qst' question=STRING)?
+		('j' joueur=[Joueur])?
+		('pers' personne=[Personne])?
+		('choix' '{' choix+=Choix ( "," choix+=Choix)* '}' )?
+	'}';
+
+Choix : 
+	name=ID
+	'{'
+		'action_du_choix' action_du_choix=Action
+	'}';
+
+Action : 
+	'{'
+		'victime' '(' Victime+=[Joueur] ( "," Victime+=[Joueur])* ')' 
+		('Attribution_objet' '(' Attribution_objet+=[Objet] ( "," Attribution_objet+=[Objet])* ')' )?
+		('Attribution_connaissance' '(' Attribution_connaissance+=[Connaissance] ( "," Attribution_connaissance+=[Connaissance])* ')' )?
+		('Consommation_objet' '(' Consommation_objet+=[Objet] ( "," Consommation_objet+=[Objet])* ')' )?
+	'}';

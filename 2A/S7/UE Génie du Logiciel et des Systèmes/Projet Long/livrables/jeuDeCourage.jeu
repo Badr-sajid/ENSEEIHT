@@ -1,0 +1,58 @@
+Jeu jeuDeCourage {
+	Connaissance leSauveurDuMonde {visibility Invisible},
+	Objet laVie { 
+		taille 1 
+		visibility Invisible
+	},
+	
+	Personne leVortex {
+		Interaction{
+			qst "Serais-tu pret à mettre ta vie en jeu pour sauver le monde ?!" 
+			j Hero 
+			pers leVortex
+			choix 
+				Choix1 { 
+					action_du_choix { 
+					victime ( Hero ) 
+					Attribution_connaissance (leSauveurDuMonde) 
+					} } ,
+				Choix2 { action_du_choix { 
+					victime ( Hero ) 
+					Consommation_objet ( laVie )
+				} }
+			}
+		visibility Visible
+		conditions_visibilite ( Contrainte_connaissance { condition_connaissance leSauveurDuMonde } )
+	},
+	
+	Endroit lieuDeLaBataille Debut Chemin_suivantD (
+		DebutversSucces  { Lieu_precedent lieuDeLaBataille Lieu_suivant mondeSauve cdt_ouverture estVerifie  },
+		DebutversEchec { Lieu_precedent lieuDeLaBataille Lieu_suivant mondeDetruit cdt_ouverture estVerifie }) 
+		{
+			personne ( leVortex)
+			ouvertOUferme Ouvert
+		},
+		
+	Endroit mondeSauve Fin  Chemin_entrantsF (
+		DebutversSucces { Lieu_precedent lieuDeLaBataille Lieu_suivant mondeSauve cdt_ouverture })
+		{ 
+			ouvertOUferme Ferme
+		},
+			
+	Endroit mondeDetruit Fin  Chemin_entrantsF (
+		DebutversEchec { Lieu_precedent lieuDeLaBataille Lieu_suivant mondeDetruit cdt_ouverture })  
+		{ 
+			ouvertOUferme Ferme
+		} ,
+	Joueur Hero {
+		taille 10
+		lieu lieuDeLaBataille
+		allocateurObjetJoueur alocateurTentative 
+			{
+				nboccurence 1 
+				objetaoj laVie
+				proprietaire Hero
+			}
+		}
+	
+}

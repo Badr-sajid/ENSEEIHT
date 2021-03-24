@@ -1,0 +1,78 @@
+Nom       : Sajid
+Prénom    : Badr
+Groupe TP : F
+
+Les « ... » indiquent les endroits à compléter.
+
+=====[ Temps passé ]============================================================
+
+Ces informations de temps sont demandées à titre indicatif et ne sont pas
+prises en compte dans la notation du projet.
+
+Toutes les durées sont à saisir en heures.  Par exemple, si vous avez passé
+1h45, il faudra indiquer 1.75.  Si vous avez passé 2h30, il faudra indiquer
+2.5.
+
+* Temps passé sur la V1 (en h) : 3
+* Temps passé sur la V2 (en h) : 0.5
+
+
+=====[ Questions ]==============================================================
+
+--------------------------------------------------------------------------------
+Pourquoi l'exception OperationInterditeException ne peut pas être définie
+comme vérifiée par le compilateur ?
+--------------------------------------------------------------------------------
+
+Une exception vérifiée est une exception qui n'est ni Error ni RuntimeException.
+
+Le compilateur que tous les exceptions vérifiées propagées 
+par les méthodes sont prises en compte.
+
+Et comme OperationInterditeException hérite de RuntimeException 
+alors elle n'est pas vérifiées
+
+
+--------------------------------------------------------------------------------
+Expliquer ce qu'il faut faire pour ajouter un nouveau niveau de jeu, par
+exemple la stratégie lente (C13).  Pour plus de précision, on numérotera
+les étapes à faire.
+--------------------------------------------------------------------------------
+Pour ajouter une nouvelle stratégie il faut :
+
+1. Ajouter une classe qui implémente l'interface Strategie. "StrategieLente"
+2. Créer une classe de teste de cette stratégie.
+3. Dans la classe partie et plus précisément dans la méthode nommerStrategie,
+ajoute une nouvelle case qui lance le constructeur de la nouvelle strategie.
+
+
+--------------------------------------------------------------------------------
+Expliquer ce qui permet, dans votre conception, de changer dynamiquement
+(en cours d'exécution du programme) la stratégie d'un joueur (C14).
+--------------------------------------------------------------------------------
+
+Pour changer dynamiquement la stratégie on peut ajouter une option qu'il 
+faut appeler comme argument par exemple " -ch t " qui signifie ( changer = true )
+sinon changer sera par défaut égale à false. 
+Et on modifie l'arbitre de la manière suivante :
+
+I- On ajoute une méthode "changerStrategie" qui :
+     1. Demande au joueur s'il veut changer la stratégie.
+     2. Si la réponse est oui on affiche les strategies avec des numéros.
+     3. on demande au joueur de choisir un numéro.
+     4. On ajoute une switch case pour changer la stratégie.
+
+II- On ajoute un if (changer == true), au début de chaque tour et après l'affichage
+du nombre d'allumettes restantes, où on lance cette méthode "changerStrategie". 
+
+
+=====[ Explications ]===========================================================
+
+--------------------------------------------------------------------------------
+Donner ici les explications supplémentaires utiles à la compréhension du
+travail rendu.
+--------------------------------------------------------------------------------
+
+...
+
+--------------------------------------------------------------------------------

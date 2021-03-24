@@ -1,0 +1,474 @@
+--@nsURI JEU=http://JEU
+--@nsURI petrinet=http://petri
+
+module SimplePDL2PetriNet;
+create OUT: petrinet from  IN: JEU2;
+
+helper context JEU2!JeuElement
+def: getJeu(): JEU2!Jeu =
+	JEU2!Jeu.allInstances()
+		->select(j | j.jeuelement->includes(self))
+		->asSequence()->first();
+
+
+
+-- Traduire un Process en un PetriNet de m\ufffdme name
+rule Jeu2PetriNet {
+	from p: JEU2!Jeu
+	to pn: petrinet!EPetri() -- (name <- p.name)
+}
+
+rule LieuG2PetriNet {
+	from l: JEU2!Lieu_generique
+	to 
+	p_lieuG: petrinet!Place(
+		name <- l.name,
+		jeton <- 0,
+		net <- l.getJeu() )
+}
+
+
+rule Chemin2PetriNet {
+	from c: JEU2!Chemin
+	to 
+	p_chemin: petrinet!Place(
+		name <- c.name,
+		jeton <- 0,
+		net <- c.getJeu() ),
+		
+	t_c: petrinet!ETransition(
+				name <- c.name + '_chemin_avant',
+				net <- c.getJeu() 
+			),
+
+	t_c2: petrinet!ETransition(
+				name <- c.name + '_chemin_apres',
+				net <- c.getJeu() 
+			),
+			
+	a1: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- thisModule.resolveTemp(c.Lieu_precedent,'p_lieuG'),
+		Vers <- t_c,	
+		net <- c.getJeu() ),
+		
+	a2: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- t_c,
+		Vers <- p_chemin,	
+		net <- c.getJeu() ),
+		
+	a3: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- p_chemin,
+		Vers <- t_c2,	
+		net <- c.getJeu() ),
+		
+	a4: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- t_c2,
+		Vers <- thisModule.resolveTemp(c.Lieu_suivant,'p_lieuG'),	
+		net <- c.getJeu() )
+		
+		
+	
+	
+}
+-- Traduire un objet en une place avec 0 jetons
+rule Objet2PetriNet {
+	from o: JEU2!Objet
+	to 
+	
+	p_objet: petrinet!Place(
+		name <- o.name,
+		jeton <- 0,
+		net <- o.getJeu() ),
+		
+	p_objetvisible: petrinet!Place(
+		name <- o.name + '_visible',
+		jeton <- 0,
+		net <- o.getJeu() ),
+			
+
+	t_recupobj: petrinet!ETransition(
+				name <- o.name + '_recupobjet',
+				net <- o.getJeu() 
+			),
+	t_rendrevisible: petrinet!ETransition(
+				name <- o.name + '_rendrevisible',
+				net <- o.getJeu() 
+			),
+
+		
+	a1: petrinet!EArc(
+		Poids <- o.taille,
+		type <- #normal,
+		De <- p_objet,
+		Vers <- t_rendrevisible,	
+		net <- o.getJeu() ),
+		
+	a2: petrinet!EArc(
+		Poids <- o.taille,
+		type <- #normal,
+		De <- t_rendrevisible,
+		Vers <- p_objetvisible,	
+		net <- o.getJeu() ),
+		
+
+	
+		
+	a3: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- p_objetvisible,
+		Vers <- t_recupobj,	
+		net <- o.getJeu() )
+		
+		
+		
+}
+
+rule Joueur2PetriNet {
+	from j: JEU2!Joueur
+	to 
+	p_joueur: petrinet!Place(
+		name <- j.name,
+		jeton <- 1,
+		net <- j.getJeu() ),
+		
+	p_inventaire: petrinet!Place(
+		name <- j.name,
+		jeton <- j.taille,
+		net <- j.getJeu() ),
+	
+	t_debuter: petrinet!ETransition(
+				name <- 'debuter',
+				net <- j.getJeu() 
+			),
+
+		
+	a1: petrinet!EArc(
+		Poids <- 1,
+		type <- #readarc,
+		De <- p_joueur,
+		Vers <- t_debuter,	
+		net <- j.getJeu() ),
+		
+	a2: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- t_debuter,
+		Vers <- thisModule.resolveTemp(j.lieu, 'p_lieuG'),
+		net <- j.getJeu() )
+}
+		
+
+
+-- Traduire un allocateur objet lieu en un arc du lieu vers l'objet
+rule AllocateurObjetLieu2PetriNet {
+	from aol: JEU2!AllocateurObjetLieu
+	to 
+	
+	p_aol: petrinet!Place(
+		name <- aol.name,
+		jeton <- aol.nboccurence,
+		net <- aol.getJeu() 
+		),
+	
+			
+	t_2: petrinet!ETransition(
+				name <- aol.name + '_2',
+				net <- aol.getJeu() 
+			),
+			
+	a_aol2: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- thisModule.resolveTemp(aol.proprietaire.lieu,'t_retirer'),
+		Vers <- t_2,	
+		net <- aol.proprietaire.getJeu() ),
+		
+	a_aol3: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- t_2,
+		Vers <- thisModule.resolveTemp(aol.proprietaire,'p_lieu'),
+		net <- aol.proprietaire.getJeu()),
+		
+	t_3: petrinet!ETransition(
+				name <- aol.name + '_3',
+				net <- aol.getJeu() 
+			),
+			
+	a_aol4: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- p_aol,
+		Vers <- t_3,	
+		net <- aol.proprietaire.getJeu() ),
+		
+	a_aol5: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- t_3,
+		Vers <- thisModule.resolveTemp(aol.objet,'p_objet'),
+		net <- aol.proprietaire.getJeu() )	
+	
+		-- 1 transition + 2 arcs 
+		--
+}
+
+-- Traduire un allocateur objet joueur en un arc du joueur vers l'objet
+rule AllocateurObjetJoueur2PetriNet {
+	from aoj: JEU2!AllocateurObjetJoueur
+	to 
+	
+	p_aoj: petrinet!Place(
+		name <- aoj.name,
+		jeton <- aoj.nboccurence,
+		net <- aoj.objet.getJeu() 
+		),
+		
+	t1 : petrinet!ETransition(
+				name <- aoj.name + 'recup_obj',
+				net <- aoj.objet.getJeu() 
+			),
+	
+	a_aol4: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- t1,
+		Vers <- p_aoj,	
+		net <- aoj.objet.getJeu() ),
+		
+	
+	
+	a_aol5: petrinet!EArc(
+		Poids <- aoj.objet.taille,
+		type <- #normal,
+		De <- thisModule.resolveTemp(aoj.objet,'p_objet'),
+		Vers <- p_aoj,	
+		net <- aoj.objet.getJeu() )
+	
+		
+
+
+		-- 1 place + 2 transitions + 4 arcs
+		-- transition retirer objet / deposer objet 
+		-- arc1: allocateurobjetLieu -> retirer  // retirer -> allocateur // allocateur -> deposer // deposer -> allocateur
+		
+		
+		
+}
+
+-- Traduire une connaissance en une place
+rule Connaissance2PetriNet {
+	from c: JEU2!Connaissance
+	to 
+	
+	-- 3 places + 2 transitions + 5 arcs
+	p_nomc: petrinet!Place(
+		name <- c.name + '_c',
+		jeton <- 1,
+		net <- c.getJeu() ),
+	
+	p_nomcvisible: petrinet!Place(
+		name <- c.name + '_cvisible',
+		jeton <- 0,
+		net <- c.getJeu() ),
+		
+	p_nomcpossede: petrinet!Place(
+		name <- c.name + '_cpossede',
+		jeton <- 0,
+		net <- c.getJeu() ),
+		
+
+	tvis: petrinet!ETransition(
+				name <- c.name + '_vis',
+				net <- c.getJeu() 
+			),
+
+		
+	a1: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- p_nomc,
+		Vers <- tvis,	
+		net <- c.getJeu() ),
+		
+	a2: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- tvis,
+		Vers <- p_nomcvisible,	
+		net <- c.getJeu() ),
+		
+
+		
+	tposs: petrinet!ETransition(
+			name <- c.name + '_poss',
+			net <- c.getJeu() 
+			),
+
+		
+	a3: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- p_nomc,
+		Vers <- tposs,	
+		net <- c.getJeu() ),
+		
+	a4: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- tposs,
+		Vers <- p_nomcpossede,	
+		net <- c.getJeu() ),
+		
+	a5: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- p_nomcvisible,
+		Vers <- tposs,	
+		net <- c.getJeu() )
+		
+	
+}
+
+-- Traduire une interaction en une place
+rule Interaction2PetriNet {
+	from i: JEU2!Interaction
+	to 
+	p_choisir: petrinet!Place(
+		name <- i.personne.name + '_choisir',
+		jeton <- 0,
+		net <- i.joueur.getJeu() ), 
+		
+		
+	t1: petrinet!ETransition(
+			name <- i.personne.name + '_interagir',
+			net <- i.joueur.getJeu() 
+			),
+	
+	
+		
+	a1: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- thisModule.resolveTemp(i.personne,'p_visible'),
+		Vers <- t1,	
+		net <- i.joueur.getJeu() ),
+		
+	a2: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- t1,
+		Vers <- p_choisir,	
+		net <- i.joueur.getJeu() ),
+		
+	a3: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- thisModule.resolveTemp(i.lieu,'p_lieuG'),
+		Vers <- t1,	
+		net <- i.joueur.getJeu() )
+		
+		
+		
+}
+
+-- Traduire une condition en une place
+rule Condition2PetriNet {
+	from cdt: JEU2!Condition
+	to 
+	p_cdt: petrinet!Place(
+		name <- cdt.name,
+		jeton <- 0,
+		net <- cdt.getJeu() )
+}
+
+-- Traduire une personne en une place
+rule Personne2PetriNet {
+	from p: JEU2!Personne
+	to 
+	p_personne: petrinet!Place(
+		name <- p.name,
+		jeton <- 0,
+		net <- p.getJeu() ),
+		
+	p_visible: petrinet!Place(
+		name <- p.name + '_visible',
+		jeton <- 0,
+		net <- p.getJeu() ), 
+		
+	t_rendrevisible: petrinet!ETransition(
+			name <- p.name + '_rendrevisible',
+			net <- p.getJeu() 
+			),
+			
+	a1: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- p_personne,
+		Vers <- t_rendrevisible,	
+		net <- p.getJeu() ),
+		
+	a2: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- t_rendrevisible,
+		Vers <- p_visible,	
+		net <- p.getJeu() )
+			
+}
+
+
+-- Traduire un choix en une place
+rule Choix2PetriNet {
+	from ch: JEU2!Choix
+	to 
+	p_choix: petrinet!Place(
+		name <- ch.name,
+		jeton <- 0,
+		net <- ch.action_du_choix.Victime.getJeu() ),
+		
+	tch: petrinet!ETransition(
+			name <- ch.name + '_tchoix',
+			net <- ch.action_du_choix.Victime.getJeu()
+			),
+	
+	
+		
+	a1: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- thisModule.resolveTemp(ch.question,'p_choisir'),
+		Vers <- tch,	
+		net <- ch.action_du_choix.Victime.getJeu() ),
+		
+	a2: petrinet!EArc(
+		Poids <- 1,
+		type <- #normal,
+		De <- tch,
+		Vers <- p_choix,	
+		net <- ch.action_du_choix.Victime.getJeu())
+	
+}
+
+
+rule ActionConsommation2PetriNet {
+	from a: JEU2!Action_consommation
+	to 
+	p_actionconsom: petrinet!Place(
+		name <- a.Consommation_objet.name + '_consommation',
+		jeton <- 0,
+		net <- a.Consommation_objet.getJeu() )	
+}
+
+
+
+

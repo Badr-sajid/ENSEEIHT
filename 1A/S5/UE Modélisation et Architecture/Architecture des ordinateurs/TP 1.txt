@@ -1,0 +1,112 @@
+2. Additionneur complet 1 bit : implémentation
+
+module fulladder(a, b, cin : s, cout)
+	x = /a*b + a*/b
+  	s = /x*cin + x*/cin
+  	cout = /x*a + x*cin
+end module
+
+
+_____________________________________________________________
+
+_____________________________________________________________
+
+module fulladderX(sw[2..0] : ld[1..0])
+	fulladder(sw[2], sw[1], sw[0] : ld[1], ld[0])
+end module
+
+
+_____________________________________________________________
+
+_____________________________________________________________
+
+3. Additionneur 4 bits
+
+module adder4(a[3..0], b[3..0], cin : s[3..0], cout)
+	fulladder(a[0], b[0], cin : s[0], c0)
+  	fulladder(a[1], b[1], c0 : s[1], c1)
+ 	fulladder(a[2], b[2], c1 : s[2], c2)
+   	fulladder(a[3], b[3], c2 : s[3], cout)
+end module
+
+
+_____________________________________________________________
+
+_____________________________________________________________
+
+4. Additionneurs 8 bits, 16 bits, 32 bits
+
+module abs8(e[7..0]:s[7..0])
+	sup = e[7]
+   	e1[7..0] = e[7..0]*/sup + /e[7..0]*sup
+  	a[7..0] = "00000000"
+  	adder8(e1[7..0],a[7..0], sup : s[7..0], cout1)
+end module
+
+
+module adder16(a[15..0], b[15..0], cin : s[15..0], cout)
+	adder8(a[7..0], b[7..0], cin : s[7..0], c1)
+   	adder8(a[15..8], b[15..8], c1 : s[15..8], cout)
+end module
+
+
+module adder32(a[31..0], b[31..0], cin : s[31..0], cout)
+	adder16(a[15..0], b[15..0], cin : s[15..0], c1)
+   	adder16(a[31..16], b[31..16], c1 : s[31..16], cout)
+end module
+
+
+_____________________________________________________________
+
+_____________________________________________________________
+
+5. Additionneur-soustracteur 32 bits
+
+module addsub32(a[31..0], b[31..0], sub: s[31..0],V,C)
+	b2[31..0] = b[31..0]*/sub + /b[31..0]*sub
+   	adder32(a[31..0], b2[31..0], sub : s[31..0], cout)
+   	V = /a[31]*/b[31]*s[31]*/sub + a[31]*b[31]*/s[31]*/sub + a[31]*/b[31]*/s[31]*sub + /a[31]*b[31]*s[31]*sub
+   	C = cout*/sub + /cout*sub
+end module
+
+
+_____________________________________________________________
+
+_____________________________________________________________
+
+6. Décodeurs Génériques
+
+module decoder2to4(e[1..0] : s[3..0])
+	s[0] = /e[0]*/e[1]
+   	s[1] = e[0]*/e[1]
+   	s[2] = /e[0]*e[1]
+   	s[3] = e[0]*e[1]
+end module
+
+
+module decoder3to8(e[2..0] : s[7..0])
+	decoder2to4(e[1..0] : s1[3..0])
+   	s[3..0] = s1[3..0]*/e[2]
+   	s[7..4] = s1[3..0]*e[2]
+end module
+
+
+module decoder4to16(e[3..0] : s[15..0])
+	decoder3to8(e[2..0] : s1[7..0])
+   	s[7..0] = s1[7..0]*/e[3]
+   	s[15..8] = s1[7..0]*e[3]
+end module
+
+
+module decoder5to32(e[4..0] : s[31..0])
+	decoder4to16(e[3..0] : s1[15..0])
+   	s[15..0] = s1[15..0]*/e[4]
+   	s[31..16] = s1[15..0]*e[4]
+end module
+
+
+module decoder6to64(e[5..0] : s[63..0])
+	decoder5to32(e[4..0] : s1[31..0])
+   	s[31..0] = s1[31..0]*/e[5]
+   	s[63..32] = s1[31..0]*e[5]
+end module

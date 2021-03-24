@@ -1,0 +1,73 @@
+#!/bin/bash
+ip link set dev eth0 up
+ip addr add 31.4.254.200/26 dev eth0
+ip route add default via 31.4.254.193
+service bind9 start
+
+# Define the forward and reverse zone files
+TMP="
+zone \"badrsajid.com\" {
+        type master;
+        file \"/etc/bind/db.badrsajid.com\";
+        allow-transfer { 31.4.254.200; };
+        also-notify { 31.4.254.200; };
+ };
+zone \"254.4.31.in-addr.arpa\" {
+        type master;
+        file \"/etc/bind/db.31\";
+        allow-transfer { 31.4.254.200; };
+        also-notify { 31.4.254.200; };
+ };"
+echo -e "$TMP" >> "/etc/bind/named.conf.local"
+
+# pour creer les forward zone file
+TMP="
+;
+; BIND data file for badrsajid.com
+;
+\$TTL    604800
+@       IN      SOA     badrsajid.com. root.badrsajid.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      www.badrsajid.com.
+@       IN      A       31.4.254.200
+@       IN      AAAA    ::1
+www     IN      A       31.4.254.200
+"
+echo -e "$TMP" >> "/etc/bind/db.badrsajid.com"
+
+# Pour creer les reverse zone file
+TMP="
+;
+; BIND reverse data file for local 31.4.254.XXX
+;
+\$TTL    604800
+@       IN      SOA     www.badrsajid.com. root.badrsajid.com. (
+                              2        ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      www.
+200      IN      PTR     www.badrsajid.com.
+
+"
+echo -e "$TMP" >> "/etc/bind/db.31"
+
+# Set the proper permissions and ownership to the bind9 directory
+chmod -R 755 /etc/bind
+chown -R bind:bind /etc/bind
+
+#Restart DNS Service to apply changes.
+service bind9 restart
+
+# Test configuration
+named-checkconf /etc/bind/named.conf
+named-checkconf /etc/bind/named.conf.local
+named-checkzone badrsajid.com "/etc/bind/db.badrsajid.com"
+named-checkzone 254.4.31.in-addr.arpa /etc/bind/db.31

@@ -1,0 +1,36 @@
+#!/bin/bash
+ip link set dev eth0 up
+ip addr add 31.4.254.238/26 dev eth0
+ip route add default via 31.4.254.193
+
+#creation de l'utilisateur badr
+
+useradd badr
+
+# create the password of badr user(badr)
+echo "badr:bsajid" | chpasswd
+
+# Creation dùun directory de badr
+mkdir /home/badr
+
+# mettre badr comme proprietaire de /home/badr
+chown badr /home/badr
+usermod --shell /bin/bash badr
+
+# Demarer le serveur FTP 
+hostname FTP
+echo "31.4.254.238 FTP" >> /etc/hosts
+
+# Disable world-writable mode 
+chmod o-w /etc/proftpd/ etc/proftpd/modules.conf etc/proftpd/proftpd.conf 
+
+# Start proftpd service
+service proftpd start
+
+# Test the FTP server
+TMP="
+!!!!!!!!!! Félicitation !!!!!!!!!!!!!!!
+Bonjour Badr!
+Si vous recevez ce message c'est que le FTP Marche bien .
+"
+echo -e "$TMP" >> /home/badr/msg.txt

@@ -1,0 +1,11 @@
+int valeur(int * pointeur) {
+    return (*pointeur);
+}
+
+main { 
+    int * pt = (new int);
+    int entier = 2;
+    pt = &entier;
+    int a = call valeur(pt);
+    print a;
+}

@@ -1,0 +1,34 @@
+enum Jour {Lundi, Mardi, Mercredi, Jeudi, Vendredi, Samedi, Dimanche};
+enum Mois {Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet , Aout, Septembre, Octobre, Novembre, Decembre};
+
+int getInt(Mois m) { 
+  int e = 0;
+  switch (m) {
+    case Janvier : e = 1;
+                  break; 
+    case Fevrier : e = 2; 
+                   break; 
+    case Mars : e = 3;
+                break;
+    case Avril : e = 4;
+                 break; 
+    case Mai : e = 5; 
+               break;
+    case Juin : e = 6;
+                break;
+    case Juillet : e = 7; break; 
+    case Aout : e = 8; break;
+    case Septembre : e = 9; break; 
+    case Octobre : e = 10; break; 
+    case Novembre : e = 11; break; 
+    case Decembre : e = 12; break;
+  }
+  return e;
+}
+
+test {
+  Mois m = Janvier;
+  Mois m2 = Septembre; 
+  print (call getInt (m)); 
+  print (call getInt (m2));
+}

@@ -1,0 +1,156 @@
+% Validation de http://cregut.svn.enseeiht.fr/2019/1sn/pim/tps/bsajid/pr2
+% Run on 2019-12-11 10:32:09.162758
+
+# Respect des fichiers fournis
+
+* Fichier alea.adb non modifié... ok
+* Fichier alea.ads non modifié... ok
+* Fichier exemple_alea.adb non modifié... ok
+* Fichier ensembles_tableau.ads modifié... ok
+* Fichier ensembles_tableau.adb modifié... ok
+* Fichier scenario_tableau.adb modifié... ok
+* Fichier nombre_moyen_tirages_tableau.adb modifié... ok
+* Fichier test_ensembles_tableau.adb modifié... ok
+* Fichier ensembles_chainage.ads modifié... ok
+* Fichier ensembles_chainage.adb modifié... ok
+* Fichier scenario_chainage.adb modifié... ok
+* Fichier nombre_moyen_tirages_chainage.adb modifié... ok
+* Fichier test_ensembles_chainage.adb modifié... ok
+* Running gnatclean... ok
+* Compilation de scenario_tableau.adb... ok
+
+  | x86_64-linux-gnu-gcc-8 -c -gnatwa -gnata -g scenario_tableau.adb
+  | x86_64-linux-gnu-gcc-8 -c -gnatwa -gnata -g ensembles_tableau.adb
+  | x86_64-linux-gnu-gnatbind-8 -x scenario_tableau.ali
+  | x86_64-linux-gnu-gnatlink-8 scenario_tableau.ali -g
+
+* ./scenario_tableau < ""... ok
+
+  | {}
+  | {5}
+  | {5, 28, 10}
+  | {5, 28, 10, 7}
+  | {5, 28, 7}
+  | {28}
+
+* valgrind ./scenario_tableau < ""... ok
+
+  | {}
+  | {5}
+  | {5, 28, 10}
+  | {5, 28, 10, 7}
+  | {5, 28, 7}
+  | {28}
+
+* Compilation de nombre_moyen_tirages_tableau.adb... ok
+
+  | x86_64-linux-gnu-gcc-8 -c -gnatwa -gnata -g nombre_moyen_tirages_tableau.adb
+  | nombre_moyen_tirages_tableau.adb:6:11: warning: file name does not match unit name, should be "nombre_moyen_tirage_tableau.adb"
+  | x86_64-linux-gnu-gcc-8 -c -gnatwa -gnata -g alea.adb
+  | x86_64-linux-gnu-gnatbind-8 -x nombre_moyen_tirages_tableau.ali
+  | x86_64-linux-gnu-gnatlink-8 nombre_moyen_tirages_tableau.ali -g
+
+* ./nombre_moyen_tirages_tableau < "10 50 50 10 10 50 50 10"... ok
+
+  | la moyenne est : 275.7
+
+* valgrind ./nombre_moyen_tirages_tableau < "10 50 50 10 10 50 50 10"... ok
+
+  | la moyenne est : 280.6
+
+* Compilation de test_ensembles_tableau.adb... ok
+
+  | x86_64-linux-gnu-gcc-8 -c -gnatwa -gnata -g test_ensembles_tableau.adb
+  | x86_64-linux-gnu-gnatbind-8 -x test_ensembles_tableau.ali
+  | x86_64-linux-gnu-gnatlink-8 test_ensembles_tableau.ali -g
+
+* ./test_ensembles_tableau < ""... ok
+
+  | {}
+  | {1}
+  | {1}
+  | {1, 2, 3, 4}
+  | {1, 2, 3}
+  | {1, 2, 3, 4, 5}
+  | {}
+
+* valgrind ./test_ensembles_tableau < ""... ok
+
+  | {}
+  | {1}
+  | {1}
+  | {1, 2, 3, 4}
+  | {1, 2, 3}
+  | {1, 2, 3, 4, 5}
+  | {}
+
+* Compilation de scenario_chainage.adb... ok
+
+  | x86_64-linux-gnu-gcc-8 -c -gnatwa -gnata -g scenario_chainage.adb
+  | scenario_chainage.adb:5:11: warning: file name does not match unit name, should be "test_ensembles_sujet_chainage.adb"
+  | x86_64-linux-gnu-gcc-8 -c -gnatwa -gnata -g ensembles_chainage.adb
+  | x86_64-linux-gnu-gnatbind-8 -x scenario_chainage.ali
+  | x86_64-linux-gnu-gnatlink-8 scenario_chainage.ali -g
+
+* ./scenario_chainage < ""... ok
+
+  | { }
+  | { 5 }
+  | { 5, 28, 10 }
+  | { 5, 28, 10, 7 }
+  | { 5, 28, 7 }
+  | { 28 }
+
+* valgrind ./scenario_chainage < ""... ok
+
+  | { }
+  | { 5 }
+  | { 5, 28, 10 }
+  | { 5, 28, 10, 7 }
+  | { 5, 28, 7 }
+  | { 28 }
+
+* Compilation de nombre_moyen_tirages_chainage.adb... ok
+
+  | x86_64-linux-gnu-gcc-8 -c -gnatwa -gnata -g nombre_moyen_tirages_chainage.adb
+  | nombre_moyen_tirages_chainage.adb:5:09: warning: no entities of "ada.Integer_Text_IO" are referenced
+  | nombre_moyen_tirages_chainage.adb:5:27: warning: use clause for package "Integer_Text_IO" has no effect
+  | nombre_moyen_tirages_chainage.adb:7:11: warning: file name does not match unit name, should be "nombre_moyen_tirage_chainage.adb"
+  | x86_64-linux-gnu-gnatbind-8 -x nombre_moyen_tirages_chainage.ali
+  | x86_64-linux-gnu-gnatlink-8 nombre_moyen_tirages_chainage.ali -g
+
+* ./nombre_moyen_tirages_chainage < "10 50 50 10 10 50 50 10"... ok
+
+  | la moyenne est : 32.900
+
+* valgrind ./nombre_moyen_tirages_chainage < "10 50 50 10 10 50 50 10"... ok
+
+  | la moyenne est : 32.720
+
+* Compilation de test_ensembles_chainage.adb... ok
+
+  | x86_64-linux-gnu-gcc-8 -c -gnatwa -gnata -g test_ensembles_chainage.adb
+  | x86_64-linux-gnu-gnatbind-8 -x test_ensembles_chainage.ali
+  | x86_64-linux-gnu-gnatlink-8 test_ensembles_chainage.ali -g
+
+* ./test_ensembles_chainage < ""... ok
+
+  | { }
+  | { 1 }
+  | { 1 }
+  | { 1, 2, 3, 4 }
+  | { 1, 2, 3 }
+  | { 1, 2, 3, 4, 5 }
+  | { }
+
+* valgrind ./test_ensembles_chainage < ""... ok
+
+  | { }
+  | { 1 }
+  | { 1 }
+  | { 1, 2, 3, 4 }
+  | { 1, 2, 3 }
+  | { 1, 2, 3, 4, 5 }
+  | { }
+
+* Running gnatclean... ok

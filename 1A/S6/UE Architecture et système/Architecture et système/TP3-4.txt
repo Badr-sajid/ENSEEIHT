@@ -1,0 +1,215 @@
+Ex1 : 			Somme des éléments d’un tableau
+
+tab = 0x100	// adresse
+n = 5			// nombre d’element
+set tab, %r1
+clr %r2
+clr %r3
+
+loop: 
+	ld [%r1 + %r2], %r4
+     	add %r4, %r3, %r3
+     	inc %r2
+     	cmp %r2, n
+     	blu loop
+stop: 
+	ba stop
+
+      .org tab
+      .word 6,2,9,10,3	// element du tableau
+
+
+
+_____________________________________________________________
+
+_____________________________________________________________
+
+
+
+Ex2 : 			Max d’un tableau 
+
+tab = 0x100
+n = 5
+
+set tab, %r1
+clr %r2
+clr %r3
+ld [%r1], %r3
+loop:
+	ld [%r1+%r2], %r4
+        	cmp %r4, %r3
+        	ble finsi
+        	mov %r4, %r3
+finsi:
+	inc %r2
+       	cmp %r2, n
+        	blu loop
+    
+stop:   
+	ba stop
+
+	.org tab
+	.word 6,2,9,15,-50	
+
+
+
+
+_____________________________________________________________
+
+_____________________________________________________________
+
+
+Ex3 :			Trie à bulle
+
+tab = 0x100
+n = 8
+
+set tab, %r1
+clr %r2    // indice i
+set n-1, %r2
+clr %r3    // indice j
+clr %r4    // TAB[j]
+clr %r5    // TAB[j+1]
+
+loop1:
+	set 0,%r3
+        	loop2:
+	ld [%r1+%r3], %r4
+	add %r3, 1, %r9
+	ld [%r1+%r9], %r5
+	cmp %r4, %r5
+	ble finsi
+	st %r4, [%r1+%r9]
+	st %r5, [%r1+%r3]
+
+finsi :
+	inc %r3
+	cmp %r3, %r2
+	blu loop2
+	dec %r2
+	set 0, %r8
+	cmp %r8, %r2
+	blu loop1   
+stop1:
+	ba stop1
+
+	.org tab
+	.word 6,2,9,4,1,17,6,-2
+
+
+
+
+_____________________________________________________________
+
+_____________________________________________________________
+
+
+Ex4 :				Crible
+
+tab = 0x100
+elim = 0x45
+n = 10
+
+	set tab, %r1
+	set elim, %r11
+
+	clr %r2    // indice i
+	clr %r3    // indice j
+	clr %r4    // TAB[i]
+	clr %r5    // TAB[j]
+	clr %r6    // elim[i]
+	clr %r7    // elim[j]
+	clr %r8    // x
+
+loop1:  
+	ld [%r11 + %r2], %r6
+	cmp %r0,%r6
+	blu finsi
+	ld [%r1 + %r2], %r8
+	add %r2,1,%r3        // j = i+1
+
+loop2:
+	ld [%r1 + %r3], %r5
+loop3:
+	cmp %r5,%r8
+	ble stop3
+	ld [%r1 + %r2], %r4
+	add %r8,%r4,%r8
+	ba loop3
+
+stop3:
+	cmp %r8, %r5
+	bne finsi2
+	set 1,%r9
+	st %r9,[%r11 + %r3]
+
+finsi2:       
+	inc %r3
+	cmp %r3, n
+	blu loop2
+
+finsi :
+	inc %r2
+	cmp %r2, n-1
+	blu loop1
+stop:
+	ba stop
+
+        .org tab
+        .word 3,4,6,12,13,15,16,20,23,37 
+        .org elim
+        .word 0,0,0,0,0,0,0,0,0,0
+
+
+
+
+_____________________________________________________________
+
+_____________________________________________________________
+
+
+Ex5 : 				polonaise inversée
+
+tab = 0x100
+n = 10
+set tab, %r1
+set 2147483648, %r8        	// fin
+add %r8,1,%r9               		// +
+add %r9,1,%r10              		// -
+      clr %r2               		// i
+      clr %r4               		// op1
+      clr %r5               		// op2
+      set 50,%r29
+
+TQ:
+	ld[%r1+%r2], %r3    	// Expr[i]
+	cmp %r3,%r8
+	beq FinTQ
+	cmp %r8,%r3
+	bgu empiler
+	pop %r5			// dépiler
+	pop %r4			// dépiler
+	cmp %r3, %r9
+	beq somme
+	subcc %r4,%r5,%r6
+	push %r6
+	ba finsi
+        
+somme:
+	add %r4,%r5,%r6
+	push %r6
+	ba finsi
+        
+empiler :
+	push %r3			// empiler
+	ba finsi
+          
+finsi:
+	inc %r2
+          ba TQ
+          
+FinTQ :
+	pop %r15
+
+	.org tab
+	.word 15,7,4,2147483650,2147483649,2,2147483650,2147483648

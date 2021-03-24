@@ -1,0 +1,15 @@
+op finished = echec \/ succes;   #A la fin le joueur se trouve soit dans echec ou dans succes
+
+[] (finished => dead);        #si on arrive à echec ou à succes on arrive à une fin
+[] <> dead;                   #il ya toujours une fin 
+[] (dead => finished);       #si on arrive à un fin alors le joueur était forcément dans echec ou succes.
+- <> finished;             
+
+
+#on peut être dans un seul lieu à la fois
+[] enigme => -(succes\/echec);        #si on est dans enigme, on ne peut pas être dans succes ou echec
+[] succes => -(enigme\/echec);        #si on est dans succes, on ne peut pas être dans enigme ou echec
+[] echec => -(enigme\/succes);        #si on est dans echec, on ne peut pas être dans enigme ou succes
+
+
+

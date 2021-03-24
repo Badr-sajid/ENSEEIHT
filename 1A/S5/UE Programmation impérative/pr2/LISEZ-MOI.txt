@@ -1,0 +1,94 @@
+% Mini-projet  : Ensemble
+% NOM & Prénom : SAJID BADR
+% Groupe       : F
+
+
+**Consigne :** Dans ce fichier, il faut répondre à la place des "..." et sur
+les lignes qui les suivent.  Le texte déjà écrit doit être conservé !
+
+**Remarque :** Ce fichier utiliser la syntaxe Markdown.  On peut en engendrer
+une version pdf en faisant :
+
+	pandoc LISEZ-MOI.txt -o LISEZ-MOI.pdf
+
+
+# Temps passé sur le projet
+
+Ces informations de temps sont demandées à titre indicatif et ne sont pas
+prises en compte dans la notation du projet.
+
+Toutes les durées sont à saisir en heures.  Par exemple, si vous avez passé
+1h45, il faudra indiquer 1.75.  Si vous avez passé 2h30, il faudra indiquer
+2.5.
+
+* Temps passé sur la version Tableau    (en h) : 3
+* Temps passé sur la version Chainage   (en h) : 2
+* Temps passé à compléter LISEZ-MOI.txt (en h) : 0.75
+
+
+# Questions
+
+**Question 1 :**
+Quels sous-programmes avez-vous définis dans les corps des modules sans les
+spécifier dans la spécification ?  Expliquez pourquoi.
+
+**Réponse :**
+Tous les programmes que j'ai définis dans le corps sont spécifier dans la spécification.
+
+
+**Question 2 :**
+Y a-t-il des sous-programmes dont les contrats (préconditions ou
+postconditions) changent entre Ensembles_Tableau et Ensembles_Chaine ?
+Lesquels ?
+
+**Réponse :**
+Oui, pour la procédure ajouter_element dans Ensembles_Tableau nous avons la précondition taille_ensemble(Ensemble) < Capacite qu'on ne trouve pas dans Ensembles_Chaine
+
+
+**Question 3 :**
+Le type Ensemble doit être déclaré comme très privé dans Ensembles_Chaine.
+Expliquez pourquoi il est important ici de définir le type Ensemble comme
+très privé (et pas seulement privé).  On commecera par rappeler la
+différence entre "private" (privé) et "limited private" (très privé).
+
+**Réponse :**
+Avec le type privé, on a droit à l'affectation (:=) et l'égalité (=), mais On perd ces opérations avec un type "limited private".
+Il faut définir le type Ensemble comme très privé car il s'agit de pointeur et donc il faut éviter l'affectation sinon on risque de tous perdre, et pour l'égalité, elle n'est pas possible tant que le type ensemble n'est pas ordonner, et donc pour tester l'égaliter entre deux ensemble il faut créer une fonction qui la teste en testant l'existance de tous les elements dans les deux ensembles. 
+
+**Question 4 :**
+Même pour Ensemble_Tableau, le type doit être très privé.  Pourquoi ?
+
+**Réponse :**
+Ensemble_tableau doit etre de type tres prive à cause des deux problèmes anonce dans la question précedante et qui sont l'égalité dont il faut programmer une fonction et aussi l'affectation qui peut causer trop d'erreur. 
+
+
+**Question 5 :**
+Dans Ensemble_Tableau, est-il possible d'implanter le sous-programme qui
+supprime un élément en temps constant concernant le nombre d'affectations
+des éléments de l'ensemble (et linéaire sur le nombre de comparaison) ? Si
+oui, comment ?
+
+**Réponse :**
+oui, c'est possible de l'implenter en utilisant une boucle qui cherche l'eplacement de l'element à supprimer et dans cette cas on insert le dernier element du tableau après on diminue la taille de l'ensemble de 1.  
+
+
+**Question 6 :**
+Est-ce que les deux implantations envisagées des ensembles (Tableau ou
+Chainage) sont efficaces ?
+
+**Réponse :**
+Pour l'ensemble_tableau, cette implentation n'est pas tout à fais efficace car le nombre d'element de l'ensemble est limité.
+par contre l'ensemble_chainage depasse ce probleme mais on a besoin de plus de memoire.
+
+
+
+# Difficultés
+
+Voici les difficultés rencontrées et les solutions apportées.
+
+...
+
+
+# Remarques diverses
+
+...

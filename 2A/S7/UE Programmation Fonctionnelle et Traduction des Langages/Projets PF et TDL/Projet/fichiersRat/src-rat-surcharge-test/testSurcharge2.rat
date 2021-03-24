@@ -1,0 +1,15 @@
+int firstElement(int a int b) {
+   return a;
+}
+
+
+int firstElement(int a bool b) {
+   return a;
+}
+
+main {
+   int i = call firstElement(5 6);
+   int j = call firstElement(5 true);
+   print i;
+   print j;
+}

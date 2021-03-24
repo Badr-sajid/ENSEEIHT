@@ -1,0 +1,180 @@
+Nom    : Sajid
+Prénom : Badr
+Groupe : F
+--------------------------------------------------------------------------------
+
+
+Consigne : Dans ce fichier, il faut répondre à la place des "..." et sur les
+lignes qui les suivent.  Le texte déjà écrit doit être conservé !
+
+=====[ Temps passé ]============================================================
+
+Ces informations de temps sont demandées à titre indicatif et ne sont pas
+prises en compte dans la notation du projet.
+
+Toutes les durées sont à saisir en heures.  Par exemple, si vous avez passé
+1h45, il faudra indiquer 1.75.  Si vous avez passé 2h30, il faudra indiquer
+2.5.
+
+Temps total passé sur ce mini-projet (en h) : 3.15
+Temps passé sur les raffinages (en h) : 2
+
+=====[ Raffinages ]=============================================================
+
+-- Ne donner que les niveaux de raffinages qui sont informatifs.   Il est
+-- généralement inutile de donner le dernier niveau de raffinage s'il ne
+-- contient pas d'étapes non élémentaires.
+
+
+R0 : Reviser la table de multiplication.
+
+
+Exemples : On ne donnera pas d'exemples d'utilisation
+
+
+R1 : comment "reviser la table de multiplication"?
+   	 -Demander la table à réviser.
+    	 -Répondre à 10 opérations.
+    	 -Conclure à propos de la révision de la table.
+	 -Decider de continuer ou non
+
+R2 : comment "Demander la table à réviser"?
+	Ecrire("Table à réviser : ")
+	Lire (Table)    	Table : In Entier
+	{ Table <= 10 and Table >= 1}
+	TanQue Table < 11 et Table > 0 Faire
+		Ecrire("La Table à réviser doit être comprise entre 1 et 10 ")
+		lire (Table) 	(Table:in)
+		
+R2 : Comment "Répondre aux opérations"?
+	pour i in 1..10 faire
+		choisir un entier aléatoire entre 1 et 10	Nombre : Entier
+		Ecrire(Table , "x" , Nombre , "=")
+		lire(resultat) 		resultat : In Entier
+		calculer le Temps de chaque réponse.
+		calculer le Delai Maximal.
+		verifier et commenter le resultat.
+		cacluler le Nombre d'Erreur. 
+	fin pour
+
+R2 : comment "conclure"?
+	-afficher les messages correspondantes au Temps et aux Nombres d'Erreur.
+R2 : comment "decider de continuer"?
+	repeter 
+		le programme
+		ecrire("Continuer la revision(o/n)?")
+		lire (reponse)
+	jusqu'a Reponse = 'n' or Reponse = 'N'
+R3 : comment "choisir un entier aléatoire"?
+	Get_Random_number(Nombre)
+	
+R3 : comment "calculer le Temps et le Maximum"?
+         Temps <-- 0				(à initialiser avant la boucle pour) 
+         Max_Delai <-- 0			(à initialiser avant la boucle pour)
+         Debut <-- Clock
+         Fin <-- Clock                           (à initialiser après lire(Resultat) )
+         Delai <--Fin - Debut
+         Si Delai > Max_Delai alors
+ 		 Max_Delai <-- Delai
+                 Nombre_a_Reviser <-- Nombre
+	Fin Si
+	Temps <-- Temps + Delai                 (avant fin pour)
+
+
+R3 : comment "verifier et commenter le résultat"?
+	Erreur <-- 0	 			(à initialiser avant la boucle pour)
+	Si resultat = (Table*Nombre) Alors 
+		Put("Bravo!")
+	Sinon 
+		Put("mauvaise réponse.")
+		Erreur <-- Erreur + 1
+	Fin Si
+
+R4 : comment "afficher les messages"?
+	Selon Erreur Dans
+		0 => ecrire("Aucune Erreur. Excellent !")
+		1 => ecrire("Une seule Erreur. Très bien.")
+		10 => ecrire("Tout est faux ! Volontaire ? ")
+		Autres => ecrire(Erreur," Erreurs.  Il faut encore travailler la Table de" , Table)
+	Fin_Selon
+	si Erreur > 5 alors
+			ecrire("seulement", 10-Erreur, "bonnes Reponses. Il faut apprendre la Table de",Table)
+	Fin Si
+	Si Max_Delai > Moyenne + 1 Alors
+		ecrire("Des hésitations sur la Table de ", Nombre_a_Reviser," : ", Max_Delai , "secondes contre", Moyenne , "en Moyenne.  Il faut certainement la réviser.")
+	Fin Si 
+
+
+=====[ Test ]===================================================================
+
+* Expliquer rapidement comment vous avez testé votre programme.
+
+Pour tester le programme j'ai demandé à réviser un table négative et autre supérieur à 10 pour et j'ai eu un message d'erreur après j'ai demander les autres tables et c'est bien marcher et pour tester les differant cas j'ai utiliser latable de 1 pour que je puisse tester les cas que je veux rapidement et avec précision.  
+
+
+=====[ Difficultés ]============================================================
+
+* Indiquer les difficultés rencontrées
+
+Après avoir bien compris le sujet et ce qui est demandé je n'ai pas trouvé de problème pour la redaction du raffinage ni du code.
+
+
+=====[ Questions ]==============================================================
+
+Pour les questions suivantes, il ne s'agit pas de modifier le programme écrit
+mais d'expliquer comment il faudrait le modifier pour prendre en compte les
+évolutions envisagées.
+
+
+* Au lieu de poser 10 questions, on veut en poser 15. Comment faire ?
+
+-modifier pour i 1..15 faire
+-modifier sinon si erreur = 15 alors
+-modifier si erreur > 7 alors
+-modifier ecrire("seulement", 15-erreur, "bonnes ....)
+-modifier temps/15
+
+* On veut afficher "Bien" si l'utilisateur n'a commis que 2 ou 3 erreurs.
+  Comment modifier le programme ?
+
+-Ajouter la ligne suivante dans selon erreur Dans
+	2 ou 3 => ecrire("Bien")
+
+
+* On veut donner la possibilité à l'utilisateur d'abandonner le programmes en
+  tapant 0 quand on lui demande le résultat d'une multiplication. Quelles
+  modifications faut-il alors faire au programme ? 
+
+-Au lieu d'utiliser la boucle faire jusqu'à on utilise la boucle TantQue,on supprime du programme la demande de la table, et on demande à l'utilisateur de choisir la table à reviser dès le début, puis utiliser la boucle 
+	Tantque table != 0 faire
+		le programe
+		faire
+			ecrire("choisir la table à reviser")
+			lire table
+		jusqu'à table>=10 ou table<=0
+	Fin TantQue
+
+* À la fin d'une série de questions, on veut proposer à l'utilisateur de
+  réviser la table pour laquelle l'utilisateur a commis le plus d'erreurs.
+  Par exemple, s'il se trompe pour 3 * 5, on compte une erreur pour 3 et
+  une erreur pour 5.  Comment faire ?
+
+on doit utiliser un tableau T dans le quel chaque case sera remplit par un entier de 1 à 10 et la suivante par le nombre de faute de cette entier qu'on initialise par 0 et après chaque faute on utilise l'instruction suivante:
+	T[table*2-1]=T[table*2-1] + 1
+	T[nombre*2-1]=T[nombre*2-1] + 1
+pour choisir la table à réviser on cherche le maximum de faute dans ce table en utilisant la boucle:
+	max = 0
+	pour i 1..19 Pas 2 faire
+		si T[i]>max Alors
+			nombre_a_reviser= T[i-1]
+		FinSi
+	FinPour
+	
+
+=====[ Remarques diverses ]=====================================================
+
+Cette rubrique est libre (et ne sera pas prise en compte dans la notation).
+
+...
+
+--------------------------------------------------------------------------------

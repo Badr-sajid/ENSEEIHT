@@ -1,0 +1,3 @@
+#!/bin/bash
+ip link set dev eth0 up
+echo "nameserver 31.4.254.200" >> /etc/resolv.conf

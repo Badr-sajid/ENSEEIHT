@@ -1,0 +1,20 @@
+R0: Afficher le plus petit et le plus grand élément d'une série d'entiers la saisie de la série se termine par 0 (qui n'appartient pas à la série).
+
+R1: -Afficher la consigne
+    -Saisir un premier entier 
+    -Si l'entier n'est pas une valeur de la série :
+        -Afficher "Pas de valeurs dans la série"
+    Sinon :
+		-Initialiser Min et Max avec le premier entier
+        -traiter les autres éléments de la série
+        -Saisir d'autre entiers jusqu'à la saisie de l'enter hors la serie
+        -mettre à jour le Min et le Max
+        -afficher le Min et Max
+
+R2: -Ecrire le consigne
+    -lire l'entier
+    -repeter la saisie des entier et la modification du min et du max jusqu'à la saisie de 0
+    -si l'entier est < min alors min <-- entier
+    -si l'entier est > max alors max <-- entier
+
+         

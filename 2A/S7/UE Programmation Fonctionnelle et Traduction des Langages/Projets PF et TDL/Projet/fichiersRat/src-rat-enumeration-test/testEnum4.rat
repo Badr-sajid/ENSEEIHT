@@ -1,0 +1,9 @@
+enum Mois {Janvier, Fevrier, Fevrier, Avril,  Mai, Juin,  Juillet ,  Aout, Septembre, Octobre, Novembre, Decembre};
+enum Jour {Lundi, Mardi, Mercredi, Jeudi, Vendredi, Samedi, Dimanche};
+
+main {
+    Jour j1 = Jeudi;
+    Jour j2 = Vendredi;
+    if (j1 = Jeudi) { print j1; }
+    else { print j2; }
+}

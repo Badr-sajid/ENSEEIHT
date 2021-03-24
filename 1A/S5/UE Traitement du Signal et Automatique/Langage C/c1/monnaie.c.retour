@@ -1,0 +1,10 @@
+Remarques :
+
+* Exécution : Mauvaise somme affichée !
+* initialiser: il manque assert(monnaie != NULL)
+* ajouter: m2 devrait être en in !
+* Constante : définir (et utiliser) une constante pour la taille du porte-monnaie
+* main: il faut utiliser les SP déjà écrits !
+* main: il ne faut sommer que les monnaies de la devise demandée.
+
+

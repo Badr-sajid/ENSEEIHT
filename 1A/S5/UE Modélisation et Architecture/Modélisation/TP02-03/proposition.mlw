@@ -1,0 +1,28 @@
+theory Proposition
+
+   predicate a
+   predicate b
+
+   goal Thm00 : (a /\ b) -> (b /\ a)
+
+   predicate phi
+   predicate psi
+   predicate chi
+
+   goal Thm01 : ((phi \/ psi) -> chi) -> (psi -> chi)
+
+   goal Thm02 : phi -> (not (not phi))
+
+   goal Thm03 : (phi -> psi) -> ((not psi) -> (not phi))
+
+   goal Thm04 : (not (not phi)) -> phi
+
+   goal Thm05 : ((not psi) -> (not phi)) -> (phi -> psi)
+
+   predicate e
+   predicate y
+   predicate r
+
+   goal Thm06 : ((e -> (y \/ r)) /\ (y -> r)) -> ((not r) -> (not e))
+
+end

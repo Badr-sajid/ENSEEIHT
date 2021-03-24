@@ -1,0 +1,9 @@
+int f(int i1 int i2)  { return 1;}
+int f(rat r1 rat r2)  { return 2;}
+
+main{
+   int i = call f (1 2);
+   print i;
+   i = call f ([1/2] [1/3]);
+   print i;
+}

@@ -1,0 +1,96 @@
+EX2 :
+
+module ucmp1(a,b:sup,eq)
+	sup = a*/b
+   	eq = a*b + /a*/b
+end module
+
+
+module ucmp2(a[1..0],b[1..0]:sup,eq)
+	ucmp1(a[0],b[0]:sup0,eq0)
+   	ucmp1(a[1],b[1]:sup1,eq1)
+   	sup = sup1 + eq1*sup0
+   	eq = eq0*eq1
+end module
+
+
+module ucmp4(a[3..0],b[3..0]:sup,eq)
+	ucmp2(a[1..0],b[1..0]:sup0,eq0)
+   	ucmp2(a[3..2],b[3..2]:sup1,eq1)
+   	sup = sup1 + eq1*sup0
+   	eq = eq0*eq1
+end module
+
+
+module ucmp8(a[7..0],b[7..0]:sup,eq)
+	ucmp4(a[3..0],b[3..0]:sup0,eq0)
+   	ucmp4(a[7..4],b[7..4]:sup1,eq1)
+   	sup = sup1 + eq1*sup0
+   	eq = eq0*eq1
+end module
+
+
+module ucpm8signe(a[7..0],b[7..0]:sup,eq)
+	abs8(a[7..0]:a1[7..0])
+	abs8(b[7..0]:b1[7..0])
+	ucmp8(a1[7..0],b1[7..0]:sup1,eq1)
+   sup = /a[7]*b[7] + /a[7]*/b[7]*sup1 + a[7]*b[7]*/sup1
+   eq = eq1*a[7]*b[7] + eq1*/a[7]*/b[7]
+end module
+
+
+__________________________________________________________________________________________________________________________
+
+__________________________________________________________________________________________________________________________
+
+EX3 :
+
+module troisetats(rst, clk, load, remain: etat[2..0])
+	etat[0] := /load*remain*etat[0]*/etat[1]*/etat[2] + /load*/remain*etat[1]*/etat[0]*/etat[0] on clk, reset when rst
+   	etat[1] := /load*remain*etat[1]*/etat[2]*/etat[0] + /load*/remain*etat[2]*/etat[1]*/etat[0] on clk, reset when rst
+   	etat[2] := load + /load*remain*etat[2] on clk, reset when rst
+end module
+
+
+__________________________________________________________________________________________________________________________
+
+__________________________________________________________________________________________________________________________
+
+Ex4 :
+
+module byte2dec(clk , rst , load , e[7..0] : s[11..0])
+	V100[7..0] = "01100011"
+   	V10[7..0] = "00001010"
+	ucmp8(Vc[7..0],V100[7..0],sup99,eq99)
+   	ucmp8(Vc[7..0],V10[7..0],sup9,eq9)
+	Ec := load + sup99*Ec on clk , reset when rst
+   	Ed := /sup99*Ec + sup9*Ed on clk , reset when rst
+   	Ef := /sup9*Ed + /load*Ef on clk , reset when rst
+   	badd[7..0] = /V100[7..0]*Ec*sup99 + /V10[7..0]*Ed*sup9
+   	adder8(Vc[7..0],badd[7..0],1:sadd[7..0],cout)
+   	Vc[7..0] = load*e[7..0]*Ef + sadd[7..0]*Ec*/load*sup99 + sadd[7..0]*Ed*/load*sup9 + e[7..0]*/load*(Ec*/sup99 + Ed*/sup9 + Ef)
+   	count4z(rst,clk,en100,clr100:s[11..8])
+   	en100=Ec*sup99+load
+   	clr100 = load
+   	count4z(rst,clk,en10,clr10:s[7..4])
+   	clr10 = load
+   	en10 = Ed*sup9 + load
+   	s[3..0] = Vc[3..0]
+end module
+
+
+__________________________________________________________________________________________________________________________
+
+__________________________________________________________________________________________________________________________
+
+Ex6 :
+
+module bytesigne2dec(clk , rst , load , e[7..0] : s[11..0])
+   	abs8(e[7..0]:e1[7..0])
+   	byte2dec(clk , rst , load , e1[7..0] : s1[11..0])
+   	sup = e[7]
+   	s2[11..8] = s1[11..8]*/sup + /s1[11..8]*sup
+   	a[7..0] = "00000000"
+   	adder4(s2[11..8], a[3..0], sup : s[11..8], cout)
+   	s[7..0] = s1[7..0]
+end module

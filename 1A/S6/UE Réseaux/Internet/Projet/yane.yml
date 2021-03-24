@@ -1,0 +1,56 @@
+network:
+  name: Projet
+  version: 0.1
+  hosts:
+    - utilisateur
+      mode : netns
+      init : ./scripts/utilisateur
+ 
+    - BOX
+      mode : docker
+      image : dhcp_n7:latest
+      files : ./files/BOX/etc:/
+ 
+    - Acces
+      mode : docker
+      image : quagga_n7:latest
+      files : ./files/Acces/etc:/
+ 
+    - interconexion
+      mode : docker
+      image : quagga_n7:latest
+      files : ./files/interconexion/etc:/
+ 
+    - service
+      mode : docker
+      image : quagga_n7:latest
+      files : ./files/service/etc:/
+ 
+ 
+    - DNS
+      mode : docker
+      image : dns_n7:latest
+      files : ./files/DNS/etc:/
+ 
+    - FTP
+      mode : docker
+      image : ftp_n7:latest
+      files : ./files/FTP/etc:/
+ 
+    - WEB
+      mode : docker
+      image : apache_n7:latest
+      files : ./files/WEB/var:/
+ 
+  links :
+    - utilisateur:eth0!BOX:eth0
+    - BOX:eth1!Acces:eth0
+    - Acces:eth1!interconexion:eth0
+    - interconexion:eth1!service:eth0
+ 
+  bridges:
+    - Switch0
+      interfaces: service:eth1!DNS:eth0!FTP:eth0!WEB:eth0!
+ 
+  consoles :
+    - all

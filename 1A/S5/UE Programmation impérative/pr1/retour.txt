@@ -1,0 +1,53 @@
+% Evaluation du projet "tables de multiplication"
+% PIM 2019-2020
+% SAJID Badr
+
+# Total (20 pts) : 14 pts
+
+--------------------------------------------------------------------------------
+
+# Probleme de compilation (-5 pts) : 0 pt
+
+--------------------------------------------------------------------------------
+
+# Raffinage (6 pts) : 4,5 pts
+
+* Raffinages incomplets
+    | La boucle "Repeter" doit apparaitre dans R1
+* Erreurs sur les consignes
+    | Les inegalites sont inversees pour la table entre 1 et 10
+* Erreurs sur les structures
+    | Ne pas distinguer un Selon et et un Si pour toutes les appreciations
+
+--------------------------------------------------------------------------------
+
+# Code (6 pts) : 4 pts
+
+* Il faut utiliser des constantes nommees et pas des constantes litterales
+    | Les seules constantes litterales autorisees sont -1, 0 et 1.
+* Structure de controle inadaptee
+    | Il ne faut pas de "Si" apres le "Selon" > 2 appreciations en meme temps
+* Mauvaise declaration / initialisation des variables
+    | L'utilisation de .0 pour avoir un nombre a virgule n'est pas optimal ici
+* Mauvaise utilisation des commentaires
+    | Les commentaires des raffinages sont places avant et alignes
+    | Les autres commentaires sont informatifs a la fin d'une ligne
+
+--------------------------------------------------------------------------------
+
+# Fonctionnel (5 pts) : 3,5 pts
+
+* Afficher la bonne mention
+    | 2 mentions possibles en meme temps
+* Proposer de recommencer
+    | Possibilite de coder o/n avec une boucle pour plus de robustesse
+* Interface globale
+    | On appuie trop de fois sur Entree : pas convivial
+
+--------------------------------------------------------------------------------
+
+# Questions (LISEZ-MOI.txt et questionnaire) (3 pts) : 2 pts
+
+* Abandonner : non convaincant
+* La table a reviser en fonction des frequences d'erreurs : indice inutile
+

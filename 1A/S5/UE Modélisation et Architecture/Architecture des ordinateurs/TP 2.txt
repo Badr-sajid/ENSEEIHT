@@ -1,0 +1,121 @@
+1. Décodeur 7 segments
+
+module dec7segH(x[3..0] : seg[6..0])
+	decoder4to16(x[3..0] : s[15..0])
+   	seg[0] = /s[4] * /s[1]
+   	seg[1] = s[0] + s[1] + s[2] + s[3] +s[4] + s[7] + s[8] + s[9] + s[10] + s[11] + s[13]
+   	seg[2] = s[0] + s[1] + s[2] + s[3] + s[4] + s[5] + s[6] + s[7] + s[8] + s[9] + s[10] + s[11] + s[13]
+   	seg[3] = s[0] + s[2] + s[3] + s[5] + s[6] + s[8] + s[9] + s[11] + s[12] + s[13] + s[14]
+   	seg[4] = s[0] + s[2] + s[6] + s[8] + s[10] + s[11] + s[12] + s[13] + s[14] + s[15]
+   	seg[5] = s[0] + s[4] + s[5] + s[6] + s[8] + s[9] + s[10] + s[11] + s[12] + s[13] + s[14] + s[15]
+   	seg[6] = s[2] + s[3] + s[4] + s[5] + s[6] + s[8] + s[9] + s[10] + s[11] + s[12] + s[14] + s[15]
+end module
+
+
+__________________________________________________________________________________________________________________________
+
+__________________________________________________________________________________________________________________________
+
+2. Compteurs
+a. Compteur standard
+
+module count2(rst, h : s[1..0])
+	s[1..0] := /T[1..0]*s[1..0] + T[1..0]*/s[1..0] on h, reset when rst
+   	T[0] = 1
+   	T[1] = s[0]
+end module
+
+
+b. Compteur de montre
+
+module clock4(rst, h: s[3..0])
+	s[0] := /s[0] on /h, reset when rst
+   	s[1] := /s[1] on /s[0], reset when rst
+   	s[2] := /s[2] on /s[1], reset when rst
+   	s[3] := /s[3] on /s[2], reset when rst
+end module
+
+
+module clock28(rst, h: s[27..0])
+	clock4(rst, h: s[3..0])
+   	clock4(rst, s[3]: s[7..4])
+   	clock4(rst, s[7]: s[11..8])
+   	clock4(rst, s[11]: s[15..12])
+   	clock4(rst, s[15]: s[19..16])
+   	clock4(rst, s[19]: s[23..20])
+   	clock4(rst, s[23]: s[27..24])
+end module
+
+
+__________________________________________________________________________________________________________________________
+
+__________________________________________________________________________________________________________________________
+
+3. Conception d’un circuit séquentiel à l’aide d’un compteur de phases
+
+module affmux(rst, h, data[15..0] : anodes[3..0], segments[6..0])
+	count2(rst,h:s[1..0])
+   	decoder2to4(s[1..0]:anodes[3..0])
+   	x[3..0] = data[3..0]*anodes[0] + data[7..4]*anodes[1] + data[11..8]*anodes[2] + data[15..12]*anodes[3]
+	dec7segH(x[3..0] : segments[6..0])
+end module
+
+
+__________________________________________________________________________________________________________________________
+
+__________________________________________________________________________________________________________________________
+
+4. Unité arithmétique et logique
+
+module ual(a[31..0], b[31..0], cmd[5..0] : s[31..0], enN, enZ, enVC, N, Z, V, C)
+   	addsub32(a[31..0], b[31..0], "0": s1[31..0],V1,cout1)
+   	addsub32(a[31..0], b[31..0], "1": s2[31..0],V2,cout2)   
+	s3[31..0] = a[31..0]*b[31..0]
+   	s4[31..0] = a[31..0]+b[31..0]
+	s5[31..0] = a[31..0]*/b[31..0] + /a[31..0]*b[31..0]
+   	s11[12..0] = a[12..0]
+	s11[31..13] = a[12]*"1111111111111111111"
+   	s12[24..0] = a[24..0]
+	s12[31..25] = a[24]*"1111111"
+   	s13[31..8] = a[23..0]
+   	s13[7..0] = "00000000"
+   	s14[31..0] = b[31..0]
+   
+   	C = cout1*(c1+c6) + cout2*(c2+c7)
+   	V = V1*(c1+c6) + V2*(c2+c7)
+   	N = s[31]
+   	Z = /s[31]*/s[30]*/s[29]*/s[28]*/s[27]*/s[26]*/s[25]*/s[24]*/s[23]*/s[22]*/s[21]*/s[20]*/s[19]*/s[18]*/s[17]*/s[16]*/s[15]*/s[14]*/s[13]*/s[12]*/s[11]*/s[10]*/s[9]*/s[8]*/s[7]*/s[6]*/s[5]*/s[4]*/s[3]*/s[2]*/s[1]*/s[0]
+   
+   	c1 = /cmd[5]*cmd[4]*/cmd[3]*/cmd[2]*/cmd[1]*/cmd[0]
+   	c2 = /cmd[5]*cmd[4]*/cmd[3]*cmd[2]*/cmd[1]*/cmd[0]
+   	c3 = /cmd[5]*cmd[4]*/cmd[3]*/cmd[2]*/cmd[1]*cmd[0]
+   	c4 = /cmd[5]*cmd[4]*/cmd[3]*/cmd[2]*cmd[1]*/cmd[0]
+   	c5 = /cmd[5]*cmd[4]*/cmd[3]*/cmd[2]*cmd[1]*cmd[0]
+   	c6 = /cmd[5]*/cmd[4]*/cmd[3]*/cmd[2]*/cmd[1]*/cmd[0]
+   	c7 = /cmd[5]*/cmd[4]*/cmd[3]*cmd[2]*/cmd[1]*/cmd[0]
+   	c8 = /cmd[5]*/cmd[4]*/cmd[3]*/cmd[2]*/cmd[1]*cmd[0]
+   	c9 = /cmd[5]*/cmd[4]*/cmd[3]*/cmd[2]*cmd[1]*/cmd[0]
+   	c10 = /cmd[5]*/cmd[4]*/cmd[3]*/cmd[2]*cmd[1]*cmd[0]
+   	c11 = cmd[5]*/cmd[4]*/cmd[3]*/cmd[2]*/cmd[1]*/cmd[0]
+   	c12 = cmd[5]*/cmd[4]*/cmd[3]*/cmd[2]*/cmd[1]*cmd[0]
+   	c13 = cmd[5]*/cmd[4]*/cmd[3]*/cmd[2]*cmd[1]*cmd[0]
+   	c14 = cmd[5]*/cmd[4]*cmd[3]*/cmd[2]*/cmd[1]*/cmd[0]
+   	enN = c1+c2+c3+c4+c5
+   	enZ = enN
+   	enVC = c1+c2
+   
+	s[31..0] = s1[31..0] output enabled when c1
+   	s[31..0] = s2[31..0] output enabled when c2
+   	s[31..0] = s3[31..0] output enabled when c3
+   	s[31..0] = s4[31..0] output enabled when c4
+   	s[31..0] = s5[31..0] output enabled when c5
+   	s[31..0] = s1[31..0] output enabled when c6
+   	s[31..0] = s2[31..0] output enabled when c7
+   	s[31..0] = s3[31..0] output enabled when c8
+   	s[31..0] = s4[31..0] output enabled when c9
+   	s[31..0] = s5[31..0] output enabled when c10
+   	s[31..0] = s11[31..0] output enabled when c11
+   	s[31..0] = s12[31..0] output enabled when c12
+   	s[31..0] = s13[31..0] output enabled when c13
+   	s[31..0] = s14[31..0] output enabled when c14
+end module

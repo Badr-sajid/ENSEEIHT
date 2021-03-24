@@ -1,0 +1,113 @@
+enum Mois {Janvier, Fevrier, Mars, Avril, Mai, Juin, Juillet , Aout, Septembre, Octobre, Novembre, Decembre};
+enum Comp {Ls, Eq, Gt};
+
+int getInt(Mois m){
+    int e = 0;
+    switch (m) {
+        case Janvier : e = 1; break;
+        case Fevrier : e = 2; break;
+        case Mars : e = 3; break;
+        case Avril : e = 4; break;
+        case Mai : e = 5; break;
+        case Juin : e = 6; break;
+        case Juillet : e = 7; break;
+        case Aout : e = 8; break;
+        case Septembre : e = 9; break;
+        case Octobre : e = 10; break;
+        case Novembre : e = 11; break;
+        case Decembre : e = 12; break;
+    }
+    return e; 
+}
+
+Comp compare (int p1 int p2) { 
+    Comp res = Gt;
+    if (p1<p2) { 
+        res = Ls; 
+    } else { 
+        if (p1=p2) { 
+            res = Eq; 
+        } else { 
+            res = Gt;
+        } 
+    } 
+    return res;
+}
+
+Comp compare (Mois m1 Mois m2) {
+    return (call compare ((call getInt (m1)) (call getInt (m2))));
+  }
+
+int permute (int* p1 int* p2) { 
+    int sauve = (*p1);
+    (*p1) = (*p2);
+    (*p2) = sauve;
+    return 0; 
+}
+
+
+int permute (Mois* p1 Mois* p2) { 
+    Mois sauve = (*p1);
+    (*p1) = (*p2);
+    (*p2) = sauve;
+    return 0;
+}
+
+bool ordonne (int* d1 Mois* m1 int* d2 Mois* m2) {
+    bool modif = false;
+    switch (call compare ((*m1) (*m2))) {
+        case Gt :
+            int p1 = call permute (d1 d2); 
+            int p2 = call permute (m1 m2); 
+            modif = true;
+            break;
+        case Eq :
+            switch (call compare ((*d1) (*d2))) {
+            case Gt :
+                int p1 = call permute (d1 d2); 
+                int p2 = call permute (m1 m2); 
+                modif = true;
+                break;
+            default : break;
+            }
+            break; 
+        case Ls : 
+            break;
+        }
+    return modif;
+}
+
+
+int printDate (int d1 Mois m1) {
+    print ([d1/call getInt (m1)]); 
+    return 0;
+}
+
+
+prog {
+    int* d1 = (new int); 
+    int* d2 = (new int); 
+    Mois* m1 = (new Mois); 
+    Mois* m2 = (new Mois);
+    (*d1) = 15; 
+    (*m1) = Janvier; 
+    (*d2) = 8;
+    (*m2) = Decembre;
+    bool modif = call ordonne (d1 m1 d2 m2); 
+    int err = call printDate ((*d1) (*m1)); 
+    err = call printDate ((*d2) (*m2));
+    (*d1) = 15; 
+    (*m1) = Janvier; 
+    (*d2) = 8;
+    (*m2) = Janvier;
+    modif = call ordonne (d1 m1 d2 m2); 
+    err = call printDate ((*d1) (*m1)); 
+    err = call printDate ((*d2) (*m2));
+    (*d1) = 15; 
+    (*m1) = Fevrier; 
+    (*d2) = 8;
+    (*m2) = Janvier;
+    modif = call ordonne (d1 m1 d2 m2); 
+    err = call printDate ((*d1) (*m1)); 
+    err = call printDate ((*d2) (*m2));
+}

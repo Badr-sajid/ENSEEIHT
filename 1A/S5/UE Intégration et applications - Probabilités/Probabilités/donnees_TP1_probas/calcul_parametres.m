@@ -1,0 +1,11 @@
+function [r,a,b] = calcul_parametres(X,Y)
+x_bar = mean(X);
+y_bar = mean(Y);
+var_x = mean(X.^2)-(x_bar^2);
+var_y = mean(Y.^2)-(y_bar^2);
+ecart_x = sqrt(var_x);
+ecart_y = sqrt(var_y);
+cov_x_y = mean(X.*Y)-(x_bar*y_bar);
+r = cov_x_y / (ecart_x*ecart_y);
+a = cov_x_y / var_x;
+b = y_bar - a*x_bar;

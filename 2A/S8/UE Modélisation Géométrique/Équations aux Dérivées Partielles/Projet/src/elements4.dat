@@ -1,0 +1,14 @@
+% Chaque ligne represente un element fini de type
+% quadrangle sous la forme :
+% #Noeud 1 / #Noeud 2 / #Noeud 3 / #Noeud 4
+%
+% Le resultat est une matrice 6 * 4, qui s'importe
+% sous MATLAB en utilisant la commande
+%	load('elements4.dat')
+%
+1      	2     	13  	12
+12     13     	14   	11
+13      4     	15   	14
+11     14      	9   	10
+14     15      	8   	 9
+15      6	7   	 8

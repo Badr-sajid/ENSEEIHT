@@ -1,0 +1,14 @@
+% Chaque ligne represente un element fini de type
+% triangle sous la forme :
+% #Noeud 1 / #Noeud 2 / #Noeud 3
+%
+% Le resultat est une matrice 6 * 3, qui s'importe
+% sous MATLAB avec la commande
+%	load('elements3.dat')
+%
+2	3      	13
+3	4      	13
+4	5	15
+5	6	15
+3      	16     	4
+4      	16    	5

@@ -1,0 +1,44 @@
+%
+% TP EDP 2017-2018 - Descriptif des fichiers MATLAB fournis
+% 
+
+%
+% Fichier de donnees concernant la resolution de l'EDP elliptique
+%
+
+*.dat            : fichiers de donnees concernant un exemple de maillage et ses conditions limites
+u_d.m            : solution a la frontiere de Dirichlet
+maillage_carre.m : maillage a base d'elements triangulaires
+f.m              : fonction f
+g.m		 : fonction g
+
+%
+% Fichiers a ecrire par les etudiants
+%
+
+elliptic.m         : fichier principal
+raideur_triangle.m : matrice de raideur sur un triangle
+raideur_quadrangle.m : matrice de raideur sur un quadrangle
+
+%
+% Visualisation
+%
+
+show.m            : utile pour la visualisation
+
+%
+% Utilisation des exemples fournis
+%
+
+% Premiere option
+>>[coordinates, elements3, elements4, dirichlet, neumann] = maillage_carre(n);
+
+pour charger un maillage de n*n points, avec uniquement des elements finis de type triangle
+
+% Seconde option
+>>load('nomfichier.dat');
+
+pour charger le fichier nomfichier.dat
+
+% Visualisation du maillage (avec une solution nulle)
+>>show(elements3,elements4,coordinates,zeros(size(coordinates,1),1));

@@ -1,0 +1,19 @@
+% Chaque ligne represente un sommet de la
+% frontiere de Dirichlet sous la forme :
+% #Sommet   
+%
+% Le resultat est un vecteur 12*1 qui
+% s'importe sous MATLAB en utilisant la
+% commande
+%	load('dirichlet.dat')
+%
+3
+16
+5
+7
+8
+9
+10
+11
+12
+1
